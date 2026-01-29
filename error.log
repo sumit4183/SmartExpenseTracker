@@ -1,0 +1,27 @@
+Loading data...
+Training Text Classifier...
+Model Accuracy: 1.00
+Converting to Core ML...
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/coremltools/converters/sklearn/_converter_internal.py", line 84, in _get_converter_module
+    cv_idx = _converter_lookup[sk_obj.__class__]
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+KeyError: <class 'sklearn.feature_extraction.text.TfidfVectorizer'>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/sumitpatel/.gemini/antigravity/scratch/smart_expense_tracker/scripts/train_models.py", line 53, in <module>
+    train_categorizer()
+  File "/Users/sumitpatel/.gemini/antigravity/scratch/smart_expense_tracker/scripts/train_models.py", line 33, in train_categorizer
+    coreml_model = ct.converters.sklearn.convert(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/coremltools/converters/sklearn/_converter.py", line 150, in convert
+    spec = _convert_sklearn_model(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/coremltools/converters/sklearn/_converter_internal.py", line 147, in _convert_sklearn_model
+    Input(sk_obj_name, sk_obj, _get_converter_module(sk_obj))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/coremltools/converters/sklearn/_converter_internal.py", line 86, in _get_converter_module
+    raise ValueError(
+ValueError: Transformer 'TfidfVectorizer(max_features=1000)' not supported; supported transformers are coremltools.converters.sklearn._dict_vectorizer,coremltools.converters.sklearn._one_hot_encoder,coremltools.converters.sklearn._normalizer,coremltools.converters.sklearn._standard_scaler,coremltools.converters.sklearn._imputer,coremltools.converters.sklearn._NuSVC,coremltools.converters.sklearn._NuSVR,coremltools.converters.sklearn._SVC,coremltools.converters.sklearn._SVR,coremltools.converters.sklearn._linear_regression,coremltools.converters.sklearn._LinearSVC,coremltools.converters.sklearn._LinearSVR,coremltools.converters.sklearn._logistic_regression,coremltools.converters.sklearn._random_forest_classifier,coremltools.converters.sklearn._random_forest_regressor,coremltools.converters.sklearn._decision_tree_classifier,coremltools.converters.sklearn._decision_tree_regressor,coremltools.converters.sklearn._gradient_boosting_classifier,coremltools.converters.sklearn._gradient_boosting_regressor,coremltools.converters.sklearn._k_neighbors_classifier,coremltools.converters.sklearn._ridge_regression.

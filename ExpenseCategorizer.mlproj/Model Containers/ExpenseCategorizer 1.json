@@ -1,0 +1,1051 @@
+{
+  "activityEntities" : [
+    "trainingFinished",
+    [
+      {
+        "createdDate" : "2026-01-28T04:51:34Z",
+        "event" : "trainingFinished",
+        "id" : "AF80EE55-3D5E-4071-B4B5-DF70418F3006",
+        "subtitle" : "Model converged at 2 iterations",
+        "title" : "Training Completed"
+      }
+    ],
+    "trainingStarted",
+    [
+      {
+        "createdDate" : "2026-01-28T04:51:33Z",
+        "event" : "trainingStarted",
+        "id" : "D51DACBD-15DE-45F6-97D3-BCDEC204A80E",
+        "subtitle" : "10 iterations",
+        "title" : "Training Started"
+      }
+    ],
+    "experimentCreated",
+    [
+      {
+        "createdDate" : "2026-01-28T04:49:54Z",
+        "event" : "experimentCreated",
+        "id" : "EE7C5DAC-4BCC-4E82-B235-60CF17976C22",
+        "subtitle" : "ExpenseCategorizer 1",
+        "title" : "Model Source Created"
+      }
+    ],
+    "trainingDataAdded",
+    [
+      {
+        "createdDate" : "2026-01-28T04:50:00Z",
+        "event" : "trainingDataAdded",
+        "id" : "D32C1A16-CAC5-4615-B4BF-EBD63B30AC3C",
+        "subtitle" : "synthetic_transactions.csv",
+        "title" : "Training Data Added"
+      }
+    ]
+  ],
+  "contentDataResult" : {
+    "createdDate" : "2026-01-28T04:50:00Z"
+  },
+  "createdDate" : "2026-01-28T04:49:54Z",
+  "evaluationContainerEntity" : {
+    "createdDate" : "2026-01-28T04:51:34Z",
+    "evaluationEntities" : [
+      {
+        "analysedDataType" : "none",
+        "createdDate" : "2026-01-28T04:51:34Z",
+        "dataResult" : {
+
+        },
+        "id" : "41f929cf-0dc9-4da4-a4e7-3c60e0ee2c49"
+      }
+    ],
+    "id" : "d658a59e-ad6f-40bb-bbd4-01d9472e5ea4",
+    "modifiedDate" : "2026-01-28T04:51:34Z",
+    "previewType" : "textClassifier",
+    "testingEvaluationEntity" : {
+      "analysedDataType" : "none",
+      "createdDate" : "2026-01-28T04:49:54Z",
+      "dataResult" : {
+        "createdDate" : "2026-01-28T04:50:00Z"
+      },
+      "id" : "89a041bc-afe5-435c-9668-7507b35806ba"
+    },
+    "trainingEvaluationEntity" : {
+      "analysedDataType" : "none",
+      "createdDate" : "2026-01-28T04:49:54Z",
+      "dataResult" : {
+        "classesCount" : 10,
+        "createdDate" : "2026-01-28T04:50:00Z",
+        "dataAnalysis" : {
+          "classifierAnalysis" : {
+            "labelStats" : {
+              "Entertainment" : 201,
+              "Food & Drink" : 183,
+              "Groceries" : 196,
+              "Health" : 204,
+              "Rent" : 191,
+              "Salary" : 225,
+              "Shopping" : 209,
+              "Transport" : 190,
+              "Travel" : 193,
+              "Utilities" : 208
+            }
+          },
+          "issues" : [
+            {
+              "description" : "10 classes found, including Salary, Shopping, Utilities",
+              "severity" : "debug"
+            },
+            {
+              "description" : "2000 texts found, automatically creating validation set",
+              "severity" : "good"
+            },
+            {
+              "description" : "Smallest class is \"Food & Drink\" with 183 texts",
+              "severity" : "debug"
+            },
+            {
+              "description" : "Largest class is \"Salary\" with 225 text",
+              "severity" : "debug"
+            }
+          ],
+          "objectDetectorAnalysis" : {
+            "details" : {
+
+            }
+          },
+          "summary" : {
+            "canUseValidation" : 1,
+            "classCount" : 10,
+            "sampleCount" : 2000
+          }
+        },
+        "dataSourceID" : "80BEABF0-F490-4484-88F1-7393717E00DC",
+        "dataURL" : "file:///Users/sumitpatel/.gemini/antigravity/scratch/smart_expense_tracker/scripts/synthetic_transactions.csv",
+        "itemsCount" : 2000
+      },
+      "dataSourceID" : "80BEABF0-F490-4484-88F1-7393717E00DC",
+      "evaluationResult" : {
+        "textClassifier" : {
+          "accuracy" : 1,
+          "confusionMatrix" : [
+            {
+              "actual" : "Entertainment",
+              "count" : 191,
+              "expected" : "Entertainment"
+            },
+            {
+              "actual" : "Food & Drink",
+              "count" : 174,
+              "expected" : "Food & Drink"
+            },
+            {
+              "actual" : "Groceries",
+              "count" : 190,
+              "expected" : "Groceries"
+            },
+            {
+              "actual" : "Health",
+              "count" : 195,
+              "expected" : "Health"
+            },
+            {
+              "actual" : "Rent",
+              "count" : 179,
+              "expected" : "Rent"
+            },
+            {
+              "actual" : "Salary",
+              "count" : 215,
+              "expected" : "Salary"
+            },
+            {
+              "actual" : "Shopping",
+              "count" : 201,
+              "expected" : "Shopping"
+            },
+            {
+              "actual" : "Transport",
+              "count" : 181,
+              "expected" : "Transport"
+            },
+            {
+              "actual" : "Travel",
+              "count" : 183,
+              "expected" : "Travel"
+            },
+            {
+              "actual" : "Utilities",
+              "count" : 191,
+              "expected" : "Utilities"
+            }
+          ],
+          "statsByLabel" : {
+            "Entertainment" : {
+              "count" : 191,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Food & Drink" : {
+              "count" : 174,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Groceries" : {
+              "count" : 190,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Health" : {
+              "count" : 195,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Rent" : {
+              "count" : 179,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Salary" : {
+              "count" : 215,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Shopping" : {
+              "count" : 201,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Transport" : {
+              "count" : 181,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Travel" : {
+              "count" : 183,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Utilities" : {
+              "count" : 191,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "id" : "9b072a4c-f2e3-4b46-8bcc-8de2f51fc67f"
+    },
+    "validationEvaluationEntity" : {
+      "analysedDataType" : "auto",
+      "createdDate" : "2026-01-28T04:49:54Z",
+      "dataResult" : {
+        "createdDate" : "2026-01-28T04:50:00Z"
+      },
+      "evaluationResult" : {
+        "textClassifier" : {
+          "accuracy" : 1,
+          "confusionMatrix" : [
+            {
+              "actual" : "Entertainment",
+              "count" : 10,
+              "expected" : "Entertainment"
+            },
+            {
+              "actual" : "Food & Drink",
+              "count" : 9,
+              "expected" : "Food & Drink"
+            },
+            {
+              "actual" : "Groceries",
+              "count" : 6,
+              "expected" : "Groceries"
+            },
+            {
+              "actual" : "Health",
+              "count" : 9,
+              "expected" : "Health"
+            },
+            {
+              "actual" : "Rent",
+              "count" : 12,
+              "expected" : "Rent"
+            },
+            {
+              "actual" : "Salary",
+              "count" : 10,
+              "expected" : "Salary"
+            },
+            {
+              "actual" : "Shopping",
+              "count" : 8,
+              "expected" : "Shopping"
+            },
+            {
+              "actual" : "Transport",
+              "count" : 9,
+              "expected" : "Transport"
+            },
+            {
+              "actual" : "Travel",
+              "count" : 10,
+              "expected" : "Travel"
+            },
+            {
+              "actual" : "Utilities",
+              "count" : 17,
+              "expected" : "Utilities"
+            }
+          ],
+          "statsByLabel" : {
+            "Entertainment" : {
+              "count" : 10,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Food & Drink" : {
+              "count" : 9,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Groceries" : {
+              "count" : 6,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Health" : {
+              "count" : 9,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Rent" : {
+              "count" : 12,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Salary" : {
+              "count" : 10,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Shopping" : {
+              "count" : 8,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Transport" : {
+              "count" : 9,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Travel" : {
+              "count" : 10,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            },
+            "Utilities" : {
+              "count" : 17,
+              "precisionRecall" : {
+                "success" : {
+                  "precision" : 1,
+                  "recall" : 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "id" : "b177856e-fd88-4d08-bece-30fbcb875999"
+    }
+  },
+  "evaluationEntity" : {
+    "analysedDataType" : "none",
+    "dataResult" : {
+
+    },
+    "id" : "668b5b8f-06dc-45fc-9efe-f4012cad5524"
+  },
+  "evaluationState" : "uninitialized",
+  "id" : "9915F1FC-A846-4F22-B759-D540220A9E52",
+  "modelEntity" : {
+    "createdDate" : "2026-01-28T04:49:54Z",
+    "experimentID" : "9915F1FC-A846-4F22-B759-D540220A9E52",
+    "id" : "6AAE331C-5D22-43C7-9D27-CD0B1ED31E48",
+    "modelURL" : "Models/ExpenseCategorizer%201.mlmodel",
+    "modifiedDate" : "2026-01-28T04:49:54Z",
+    "title" : "",
+    "version" : "1.0"
+  },
+  "modifiedDate" : "2026-01-28T04:51:34Z",
+  "preferredFilename" : "ExpenseCategorizer 1",
+  "settingEntity" : {
+    "algorithmType" : "maxEnt",
+    "augmentations" : [
+
+    ],
+    "featureNames" : [
+
+    ],
+    "handActionClassifierAugmentations" : [
+
+    ],
+    "handPoseClassifierAugmentations" : [
+
+    ],
+    "harVideoAugmentations" : 0,
+    "iterationCount" : 10,
+    "seedType" : "default",
+    "styleTransferAlgorithmType" : "image",
+    "taskType" : "textClassifier",
+    "textClassifierArabicLanguage" : "automatic",
+    "textClassifierCJKLanguage" : "automatic",
+    "textClassifierCyrillicLanguage" : "automatic",
+    "textClassifierIndicLanguage" : "automatic",
+    "textClassifierLatin" : "automatic",
+    "textClassifierScript" : "latin",
+    "textClassifierThaiLanguage" : "automatic"
+  },
+  "snapshotRole" : {
+    "withoutSnapshots" : 0
+  },
+  "state" : "trained",
+  "title" : "ExpenseCategorizer 1",
+  "trainingEntity" : {
+    "analysedDataType" : "datasource",
+    "checkpointMetrics" : {
+
+    },
+    "dataResult" : {
+      "classesCount" : 10,
+      "createdDate" : "2026-01-28T04:50:00Z",
+      "dataAnalysis" : {
+        "classifierAnalysis" : {
+          "labelStats" : {
+            "Entertainment" : 201,
+            "Food & Drink" : 183,
+            "Groceries" : 196,
+            "Health" : 204,
+            "Rent" : 191,
+            "Salary" : 225,
+            "Shopping" : 209,
+            "Transport" : 190,
+            "Travel" : 193,
+            "Utilities" : 208
+          }
+        },
+        "issues" : [
+          {
+            "description" : "10 classes found, including Salary, Shopping, Utilities",
+            "severity" : "debug"
+          },
+          {
+            "description" : "2000 texts found, automatically creating validation set",
+            "severity" : "good"
+          },
+          {
+            "description" : "Smallest class is \"Food & Drink\" with 183 texts",
+            "severity" : "debug"
+          },
+          {
+            "description" : "Largest class is \"Salary\" with 225 text",
+            "severity" : "debug"
+          }
+        ],
+        "objectDetectorAnalysis" : {
+          "details" : {
+
+          }
+        },
+        "summary" : {
+          "canUseValidation" : 1,
+          "classCount" : 10,
+          "sampleCount" : 2000
+        }
+      },
+      "dataSourceID" : "80BEABF0-F490-4484-88F1-7393717E00DC",
+      "dataURL" : "file:///Users/sumitpatel/.gemini/antigravity/scratch/smart_expense_tracker/scripts/synthetic_transactions.csv",
+      "itemsCount" : 2000
+    },
+    "dataSourceID" : "80BEABF0-F490-4484-88F1-7393717E00DC",
+    "featureExtractionCheckpointMayBeAvailable" : false,
+    "finishTime" : "2026-01-28T04:51:34Z",
+    "progress" : [
+      {
+        "count" : 1,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 1,
+        "tcTrainingColumnHeader" : {
+          "elapsedTime" : 0,
+          "hasTraining" : true,
+          "hasValidation" : false,
+          "remainingIterationCount" : 10,
+          "trainingAccuracy" : 0.11315789818763733,
+          "validationAccuracy" : 0
+        }
+      },
+      {
+        "count" : 2,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : true,
+        "tableIndex" : 1,
+        "tcTrainingColumnHeader" : {
+          "elapsedTime" : 0,
+          "hasTraining" : true,
+          "hasValidation" : false,
+          "remainingIterationCount" : 9,
+          "trainingAccuracy" : 1,
+          "validationAccuracy" : 0
+        }
+      },
+      {
+        "count" : 100,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 200,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 300,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 400,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 500,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 600,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 700,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 800,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 900,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1000,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1100,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1200,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1300,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1400,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1500,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1600,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1700,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1800,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : false,
+        "tableIndex" : 0
+      },
+      {
+        "count" : 1900,
+        "currentRowIndex" : 0,
+        "isLast" : false,
+        "percentComplete" : 0,
+        "tableDone" : true,
+        "tableIndex" : 0
+      }
+    ],
+    "snapshottableCheckpoints" : {
+
+    },
+    "startTime" : "2026-01-28T04:51:33Z",
+    "trainingAccuracy" : 1,
+    "trainingResults" : {
+      "textClassifier" : {
+        "accuracy" : 1,
+        "confusionMatrix" : [
+          {
+            "actual" : "Entertainment",
+            "count" : 191,
+            "expected" : "Entertainment"
+          },
+          {
+            "actual" : "Food & Drink",
+            "count" : 174,
+            "expected" : "Food & Drink"
+          },
+          {
+            "actual" : "Groceries",
+            "count" : 190,
+            "expected" : "Groceries"
+          },
+          {
+            "actual" : "Health",
+            "count" : 195,
+            "expected" : "Health"
+          },
+          {
+            "actual" : "Rent",
+            "count" : 179,
+            "expected" : "Rent"
+          },
+          {
+            "actual" : "Salary",
+            "count" : 215,
+            "expected" : "Salary"
+          },
+          {
+            "actual" : "Shopping",
+            "count" : 201,
+            "expected" : "Shopping"
+          },
+          {
+            "actual" : "Transport",
+            "count" : 181,
+            "expected" : "Transport"
+          },
+          {
+            "actual" : "Travel",
+            "count" : 183,
+            "expected" : "Travel"
+          },
+          {
+            "actual" : "Utilities",
+            "count" : 191,
+            "expected" : "Utilities"
+          }
+        ],
+        "statsByLabel" : {
+          "Entertainment" : {
+            "count" : 191,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Food & Drink" : {
+            "count" : 174,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Groceries" : {
+            "count" : 190,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Health" : {
+            "count" : 195,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Rent" : {
+            "count" : 179,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Salary" : {
+            "count" : 215,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Shopping" : {
+            "count" : 201,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Transport" : {
+            "count" : 181,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Travel" : {
+            "count" : 183,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Utilities" : {
+            "count" : 191,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "validationAccuracy" : 1,
+    "validationResults" : {
+      "textClassifier" : {
+        "accuracy" : 1,
+        "confusionMatrix" : [
+          {
+            "actual" : "Entertainment",
+            "count" : 10,
+            "expected" : "Entertainment"
+          },
+          {
+            "actual" : "Food & Drink",
+            "count" : 9,
+            "expected" : "Food & Drink"
+          },
+          {
+            "actual" : "Groceries",
+            "count" : 6,
+            "expected" : "Groceries"
+          },
+          {
+            "actual" : "Health",
+            "count" : 9,
+            "expected" : "Health"
+          },
+          {
+            "actual" : "Rent",
+            "count" : 12,
+            "expected" : "Rent"
+          },
+          {
+            "actual" : "Salary",
+            "count" : 10,
+            "expected" : "Salary"
+          },
+          {
+            "actual" : "Shopping",
+            "count" : 8,
+            "expected" : "Shopping"
+          },
+          {
+            "actual" : "Transport",
+            "count" : 9,
+            "expected" : "Transport"
+          },
+          {
+            "actual" : "Travel",
+            "count" : 10,
+            "expected" : "Travel"
+          },
+          {
+            "actual" : "Utilities",
+            "count" : 17,
+            "expected" : "Utilities"
+          }
+        ],
+        "statsByLabel" : {
+          "Entertainment" : {
+            "count" : 10,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Food & Drink" : {
+            "count" : 9,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Groceries" : {
+            "count" : 6,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Health" : {
+            "count" : 9,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Rent" : {
+            "count" : 12,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Salary" : {
+            "count" : 10,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Shopping" : {
+            "count" : 8,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Transport" : {
+            "count" : 9,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Travel" : {
+            "count" : 10,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          },
+          "Utilities" : {
+            "count" : 17,
+            "precisionRecall" : {
+              "success" : {
+                "precision" : 1,
+                "recall" : 1
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "validationEntity" : {
+    "analysedDataType" : "auto",
+    "dataResult" : {
+      "createdDate" : "2026-01-28T04:50:00Z"
+    },
+    "splitOptions" : {
+      "strategy" : {
+        "automatic" : {
+
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

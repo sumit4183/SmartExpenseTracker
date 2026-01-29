@@ -1,0 +1,51 @@
+{
+  "activityEntities" : [
+    "dataSourceCreated",
+    [
+      {
+        "createdDate" : "2026-01-28T04:50:00Z",
+        "event" : "dataSourceCreated",
+        "id" : "11834970-52C3-4275-B74E-FBFD451F92B6",
+        "subtitle" : "synthetic_transactions.csv",
+        "title" : "Data Source Created"
+      }
+    ],
+    "dataSourceTrainingStarted",
+    [
+      {
+        "createdDate" : "2026-01-28T04:51:33Z",
+        "event" : "dataSourceTrainingStarted",
+        "id" : "73248F94-04C4-4FC0-ACA1-EAD4EF1631BA",
+        "subtitle" : "ExpenseCategorizer 1",
+        "title" : "Used By"
+      }
+    ],
+    "dataSourceMetrics",
+    [
+      {
+        "createdDate" : "2026-01-28T04:51:33Z",
+        "event" : "dataSourceMetrics",
+        "id" : "0566FDEA-4CE5-460E-8EDB-C639A03D15B1",
+        "subtitle" : "10 Classes, 2,000 Items",
+        "title" : "Data Summary"
+      }
+    ]
+  ],
+  "createdDate" : "2026-01-28T04:50:00Z",
+  "dataPathRelativeToProjectURL" : "../scripts/synthetic_transactions.csv/",
+  "dataResult" : {
+    "createdDate" : "2026-01-28T04:50:00Z",
+    "dataSourceID" : "80BEABF0-F490-4484-88F1-7393717E00DC",
+    "dataURL" : "file:///Users/sumitpatel/.gemini/antigravity/scratch/smart_expense_tracker/scripts/synthetic_transactions.csv"
+  },
+  "dataURL" : "file:///Users/sumitpatel/.gemini/antigravity/scratch/smart_expense_tracker/scripts/synthetic_transactions.csv",
+  "experimentIDs" : [
+    "9915F1FC-A846-4F22-B759-D540220A9E52"
+  ],
+  "id" : "80BEABF0-F490-4484-88F1-7393717E00DC",
+  "modifiedDate" : "2026-01-28T04:51:33Z",
+  "pathType" : 0,
+  "preferredFilename" : "synthetic_transactions.csv",
+  "title" : "synthetic_transactions.csv",
+  "version" : "1.0"
+}

@@ -1,0 +1,29 @@
+{
+  "activityEntities" : [
+    "projectCreated",
+    [
+      {
+        "createdDate" : "2026-01-28T04:37:57Z",
+        "event" : "projectCreated",
+        "id" : "2E394EE8-E4E9-4897-820A-3C830B03DBC5",
+        "subtitle" : "ExpenseCategorizer",
+        "title" : "Project Created"
+      }
+    ]
+  ],
+  "authorName" : "Sumit Patel",
+  "createdDate" : "2026-01-28T04:37:57Z",
+  "description" : "Classifies transactions",
+  "id" : "49AA3654-927C-448F-8E3E-59E042164BA9",
+  "license" : "",
+  "location" : "",
+  "modifiedDate" : "2026-01-28T04:37:57Z",
+  "projectName" : "ExpenseCategorizer",
+  "settingsEntity" : {
+    "snapshotOnExtendTraining" : true,
+    "snapshotOnResumeTraining" : false
+  },
+  "taskType" : "textClassifier",
+  "title" : "Text Classification",
+  "version" : "1.1"
+}

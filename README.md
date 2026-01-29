@@ -62,8 +62,3 @@ The goal is not just tracking expenses — it’s **understanding behavior**. Th
 3. Build and Run on Simulator or Device.
 
 ***
-
-## 5️⃣ Resume Highlights
-- **ML Integration**: Implemented end-to-end Core ML pipeline for tabular classification and regression.
-- **System Design**: Architected a privacy-first offline solution using Core Data and performant background processing.
-- **SwiftUI Mastery**: Built complex, responsive UI components with modern Swift concurrency.
