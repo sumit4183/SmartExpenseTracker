@@ -13,19 +13,11 @@ class DashboardViewModel: ObservableObject {
     // private var forecaster: ExpenseForecaster?
     // private var categorizer: ExpenseCategorizer?
     
-    private var viewContext: NSManagedObjectContext
+    var viewContext: NSManagedObjectContext
     
     init(context: NSManagedObjectContext) {
         self.viewContext = context
         fetchData()
-        
-        // Load Models (Placeholder for when you have dragged them in)
-        // do {
-        //     forecaster = try ExpenseForecaster(configuration: MLModelConfiguration())
-        //     categorizer = try ExpenseCategorizer(configuration: MLModelConfiguration())
-        // } catch {
-        //     print("Failed to load ML Models: \(error)")
-        // }
     }
     
     func fetchData() {
@@ -62,17 +54,7 @@ class DashboardViewModel: ObservableObject {
         //      self.predictedSpend = prediction.predicted_amount
         // }
     }
-    
-    func addSampleTransaction() {
-        let t = Transaction(context: viewContext)
-        t.id = UUID()
-        t.amount = Double.random(in: 5...50)
-        t.date = Date()
-        t.desc = "New Entry"
-        t.category = "Uncategorized"
-        save()
-    }
-    
+
     func save() {
         do {
             try viewContext.save()

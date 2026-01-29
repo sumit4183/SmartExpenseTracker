@@ -3,6 +3,7 @@ import CoreData
 
 struct DashboardView: View {
     @StateObject private var viewModel: DashboardViewModel
+    @State private var showAddSheet = false
     
     init(context: NSManagedObjectContext) {
         _viewModel = StateObject(wrappedValue: DashboardViewModel(context: context))
@@ -48,7 +49,9 @@ struct DashboardView: View {
                             Text("Recent Transactions")
                                 .font(.headline)
                             Spacer()
-                            Button(action: viewModel.addSampleTransaction) {
+                            Button {
+                                showAddSheet = true
+                            } label: {
                                 Image(systemName: "plus.circle.fill")
                                     .font(.title2)
                             }
@@ -88,6 +91,13 @@ struct DashboardView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Dashboard")
+            .sheet(isPresented: $showAddSheet) {
+                AddTransactionView(context: viewModel.viewContext)
+                    .onDisappear {
+                        // Refresh data when sheet closes
+                        viewModel.fetchData()
+                    }
+            }
         }
         .onAppear {
             viewModel.fetchData()
