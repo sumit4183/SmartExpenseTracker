@@ -1,64 +1,43 @@
-# 🍎 Smart Expense Tracker
-> **A Privacy-First, On-Device Financial Intelligence App**
+# Smart Expense Tracker (iOS + Core ML)
 
-Smart Expense Tracker is a native SwiftUI iOS app that helps users understand, forecast, and optimize their spending using **on-device machine learning**. Unlike traditional finance apps, all analysis runs locally on the device, prioritizing privacy, performance, and offline functionality.
+An intelligent, privacy-first personal finance application that uses on-device Machine Learning to categorize transactions, forecast spending, and detect anomalies.
 
-***
+## 🌟 Key Features
 
-## 1️⃣ High-Level Overview
-The goal is not just tracking expenses — it’s **understanding behavior**. The app transforms raw transactions into actionable insights, not just charts.
+### 1. Smart Input (Real-time Categorization)
+*   **What it does**: Automatically suggests categories (e.g., "Food & Drink", "Transport") as you type a description.
+*   **Technology**: Apple **Core ML** (Natural Language Processing).
+*   **Model**: `ExpenseCategorizer.mlmodel` (Trained on prototype dataset using Create ML).
+*   **Privacy**: Run 100% on-device. No data leaves the phone.
 
-- **Privacy-first**: No sensitive financial data leaves the device.
-- **Performance-aware**: Fast inference with lightweight models.
-- **Offline-first**: Full functionality without internet.
+### 2. Personalized Forecasting
+*   **What it does**: Predicts your daily spending based on your specific history for the current day of the week.
+*   **Logic**: "Weekday Averaging" algorithm.
+    *   *Cold Start*: showing "AI Learning..." until 5 transactions are recorded.
+    *   *Active*: Aggregates historical data for the specific weekday (e.g., Saturdays) to provide a tailored run-rate.
 
-***
+### 3. Anomaly Detection (The Financial Guardian)
+*   **What it does**: Alerts you before you save a transaction that is statistically unusual for that category.
+*   **Logic**: **Z-Score Analysis**.
+    *   Calculates the Mean and Standard Deviation of the category.
+    *   Flags any transaction with a Z-Score > 2.0 (Top 2.5% outlier).
+    *   Includes a noise filter (min variance $5.00) to prevent false alarms on small amounts.
 
-## 2️⃣ Key Features
+### 4. Transaction History
+*   **Features**:
+    *   Grouped by Date (Today, Yesterday, etc.).
+    *   Searchable by Description.
+    *   Swipe-to-delete.
 
-### 🧠 On-Device Intelligence (Core ML)
-- **Automatic Categorization**: Predicts category (food, rent, travel) from transaction text.
-- **Anomaly Detection**: Flags unusual or unexpected spending in real-time.
-- **Spending Forecasting**: Predicts end-of-month spend based on historical trends.
+---
 
-### 📊 Insight-Driven Analytics
-- "You spend 23% more on dining out on weekends."
-- "This transaction is 2.4× higher than your typical spend."
-- "You’re on track to exceed your monthly budget by $180."
+## 🛠 Technical Architecture
 
-### 📥 Expense Ingestion
-- Manual entry with smart suggestions.
-- CSV import for bulk bank statements.
+*   **Language**: Swift 5.
+*   **UI Framework**: SwiftUI.
+*   **Persistence**: Core Data (Local Database).
+*   **Pattern**: MVVM (Model-View-ViewModel).
+*   **Machine Learning**:
+    *   **Training**: Python (`scripts/generate_data.py`) & Create ML.
+    *   **Inference**: Core ML Framework.
 
-***
-
-## 3️⃣ Technical Architecture
-
-### Frontend (Native iOS)
-- **SwiftUI**: Declarative UI with smooth animations.
-- **MVVM**: Clean architecture with Combine/async-await.
-- **Charts**: Swift Charts for visualization.
-
-### Data Layer
-- **Core Data**: efficient local persistence and indexing.
-- **Background Contexts**: optimizations for heavy ML tasks.
-
-### Machine Learning Pipeline
-- **Training**: Models trained in Python (Scikit-Learn/TensorFlow).
-- **Conversion**: Converted to Core ML (`.mlmodel`) for iOS.
-- **Inference**: High-performance local prediction.
-
-***
-
-## 4️⃣ Getting Started
-
-### Prerequisites
-- Xcode 15+
-- iOS 17+
-
-### Installation
-1. Clone the repository.
-2. Open `SmartExpenseTracker.xcodeproj`.
-3. Build and Run on Simulator or Device.
-
-***

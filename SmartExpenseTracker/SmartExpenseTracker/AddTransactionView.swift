@@ -53,11 +53,21 @@ struct AddTransactionView: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        viewModel.saveTransaction()
-                        presentationMode.wrappedValue.dismiss()
+                        if viewModel.saveTransaction() {
+                            presentationMode.wrappedValue.dismiss()
+                        }
                     }
                     .disabled(viewModel.amount.isEmpty || viewModel.description.isEmpty)
                 }
+            }
+            .alert("Unusual Spend Detected", isPresented: $viewModel.showAnomalyAlert) {
+                Button("Save Anyway", role: .destructive) {
+                    viewModel.confirmAnomalySave()
+                    presentationMode.wrappedValue.dismiss()
+                }
+                Button("Check Amount", role: .cancel) { }
+            } message: {
+                Text(viewModel.anomalyMessage)
             }
         }
     }
