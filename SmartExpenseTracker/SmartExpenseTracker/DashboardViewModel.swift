@@ -9,9 +9,13 @@ class DashboardViewModel: ObservableObject {
     @Published var predictedSpend: Double = 0.0
     @Published var spendingByCategory: [String: Double] = [:]
     
-    // Core ML Models
-    // private var forecaster: ExpenseForecaster?
+    // Models
     // private var categorizer: ExpenseCategorizer?
+    // removed: private var forecaster: ExpenseForecaster?
+    
+    // Learning State
+    @Published var isLearning: Bool = true
+    @Published var learningProgress: String = ""
     
     var viewContext: NSManagedObjectContext
     
@@ -47,12 +51,41 @@ class DashboardViewModel: ObservableObject {
         }
         self.spendingByCategory = catTotals
         
-        // 3. Simple Forecast (Mock for now, will connect ML next)
-        // Check if we can run inference
-        // let dayOfWeek = Double(Calendar.current.component(.weekday, from: Date()) - 1)
-        // if let prediction = try? forecaster?.prediction(day_of_week: dayOfWeek) {
-        //      self.predictedSpend = prediction.predicted_amount
-        // }
+        // 3. Personalized Forecast (On-Device Statistical Learning)
+        let minRequired = 5
+        
+        if transactions.count < minRequired {
+            // Cold Start: Not enough data to be smart yet
+            self.isLearning = true
+            self.learningProgress = "\(transactions.count)/\(minRequired)"
+            self.predictedSpend = 0.0
+        } else {
+            self.isLearning = false
+            
+            // Algorithm: "What do I usually spend on this day of the week?"
+            let weekday = Calendar.current.component(.weekday, from: Date())
+            
+            // Filter: Only past transactions from the same weekday (e.g., all previous Saturdays)
+            let relevantTransactions = transactions.filter {
+                Calendar.current.component(.weekday, from: $0.unwrappedDate) == weekday
+            }
+            
+            if relevantTransactions.isEmpty {
+                self.predictedSpend = 0.0
+            } else {
+                // Aggregate: Group by specific Date to get Daily Totals
+                // (e.g. Sat Jan 1: $10+$5=$15; Sat Jan 8: $20. Average = $17.50)
+                let groupedByDate = Dictionary(grouping: relevantTransactions) { t in
+                    Calendar.current.startOfDay(for: t.unwrappedDate)
+                }
+                
+                let dailyTotals = groupedByDate.map { $0.value.reduce(0) { $0 + $1.amount } }
+                let total = dailyTotals.reduce(0, +)
+                let average = total / Double(dailyTotals.count)
+                
+                self.predictedSpend = average
+            }
+        }
     }
 
     func save() {

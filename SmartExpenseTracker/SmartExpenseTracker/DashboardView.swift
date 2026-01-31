@@ -23,12 +23,21 @@ struct DashboardView: View {
                             .font(.system(size: 44, weight: .bold, design: .rounded))
                             .contentTransition(.numericText())
                         
-                        Text("Forecast: $\(String(format: "%.2f", viewModel.totalSpend * 1.2)) (Est)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 4)
-                            .background(Color.gray.opacity(0.1), in: Capsule())
+                        if viewModel.isLearning {
+                             Text("AI Learning... (\(viewModel.learningProgress))")
+                                .font(.caption)
+                                .foregroundStyle(.orange)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 4)
+                                .background(Color.orange.opacity(0.1), in: Capsule())
+                        } else {
+                            Text("Forecast: \(viewModel.predictedSpend.formatted(.currency(code: "USD")))")
+                                .font(.caption)
+                                .foregroundStyle(.primary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 4)
+                                .background(Color.blue.opacity(0.1), in: Capsule())
+                        }
                     }
                     .padding(.top, 20)
                     
