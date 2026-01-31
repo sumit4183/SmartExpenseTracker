@@ -49,6 +49,15 @@ struct DashboardView: View {
                             Text("Recent Transactions")
                                 .font(.headline)
                             Spacer()
+                            
+                            // See All Button
+                            NavigationLink(destination: TransactionListView(context: viewModel.viewContext)) {
+                                Text("See All")
+                                    .font(.subheadline)
+                                    .foregroundColor(.blue)
+                            }
+                            .padding(.trailing, 8)
+                            
                             Button {
                                 showAddSheet = true
                             } label: {
