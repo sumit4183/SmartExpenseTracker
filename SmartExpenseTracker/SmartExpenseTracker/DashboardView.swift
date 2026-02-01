@@ -3,6 +3,7 @@ import CoreData
 
 struct DashboardView: View {
     @StateObject private var viewModel: DashboardViewModel
+    @StateObject private var insightsViewModel = InsightsViewModel()
     @State private var showAddSheet = false
     
     init(context: NSManagedObjectContext) {
@@ -41,16 +42,34 @@ struct DashboardView: View {
                     }
                     .padding(.top, 20)
                     
-                    // MARK: - Chart Placewolder
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.blue.opacity(0.1))
-                            .frame(height: 180)
-                        Text("Weekly Spend Trend")
-                            .font(.caption)
-                            .foregroundStyle(.blue)
+                    // MARK: - Insights Carousel (New)
+                    if !insightsViewModel.insights.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(insightsViewModel.insights) { insight in
+                                    InsightCard(
+                                        icon: insight.icon,
+                                        title: insight.title,
+                                        message: insight.message,
+                                        color: insight.color
+                                    )
+                                    .frame(width: 300) // Fixed width for carousel feel
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    } else {
+                        // Fallback Chart Placeholder (if no insights yet)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.blue.opacity(0.1))
+                                .frame(height: 120)
+                            Text("Insights will appear here as you spend.")
+                                .font(.caption)
+                                .foregroundStyle(.blue)
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                     
                     // MARK: - Recent Transactions
                     VStack(alignment: .leading, spacing: 12) {
@@ -114,11 +133,19 @@ struct DashboardView: View {
                     .onDisappear {
                         // Refresh data when sheet closes
                         viewModel.fetchData()
+                        // Refresh insights
+                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            insightsViewModel.generateInsights(transactions: viewModel.recentTransactions)
+                        }
                     }
             }
         }
         .onAppear {
             viewModel.fetchData()
+            // Initial insight generation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                insightsViewModel.generateInsights(transactions: viewModel.recentTransactions)
+            }
         }
     }
 }
