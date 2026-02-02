@@ -37,10 +37,18 @@ struct DailySpend: Identifiable {
 class DashboardViewModel: ObservableObject {
     @Published var recentTransactions: [Transaction] = []
     @Published var totalSpend: Double = 0.0
+    @Published var currentMonthSpend: Double = 0.0 // For Budget
     @Published var predictedSpend: Double = 0.0
     @Published var spendingByCategory: [String: Double] = [:]
     @Published var weeklyData: [DailySpend] = [] // For Bar Chart
     @Published var categoryData: [CategorySpend] = [] // For Pie Chart
+    
+    // Budgeting (Power Feature)
+    @Published var monthlyBudget: Double {
+        didSet {
+            UserDefaults.standard.set(monthlyBudget, forKey: "monthlyBudget")
+        }
+    }
     
     // Models
     // private var categorizer: ExpenseCategorizer?
@@ -54,6 +62,8 @@ class DashboardViewModel: ObservableObject {
     
     init(context: NSManagedObjectContext) {
         self.viewContext = context
+        self.monthlyBudget = UserDefaults.standard.double(forKey: "monthlyBudget")
+        if self.monthlyBudget == 0 { self.monthlyBudget = 2000.0 } // Default
         fetchData()
     }
     
@@ -73,8 +83,15 @@ class DashboardViewModel: ObservableObject {
     }
     
     private func calculateMetrics(transactions: [Transaction]) {
-        // 1. Total Spend
+        // 1. Total Spend (All Time)
         self.totalSpend = transactions.reduce(0) { $0 + $1.amount }
+        
+        // 1b. Current Month Spend (For Budget)
+        let calendar = Calendar.current
+        let now = Date()
+        self.currentMonthSpend = transactions
+            .filter { calendar.isDate($0.unwrappedDate, equalTo: now, toGranularity: .month) }
+            .reduce(0) { $0 + $1.amount }
         
         // 2. Spending by Category
         var catTotals: [String: Double] = [:]
@@ -91,7 +108,7 @@ class DashboardViewModel: ObservableObject {
         
         // 3. Weekly Chart Data (Rolling 7 Days)
         var last7Days: [DailySpend] = []
-        let calendar = Calendar.current
+        // calendar reused from above
         for i in 0..<7 {
             let date = calendar.date(byAdding: .day, value: -i, to: Date())!
             let startOfDay = calendar.startOfDay(for: date)

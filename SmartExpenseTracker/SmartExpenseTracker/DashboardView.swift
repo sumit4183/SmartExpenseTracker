@@ -45,6 +45,12 @@ struct DashboardView: View {
                     .opacity(showContent ? 1 : 0)
                     .offset(y: showContent ? 0 : 20)
                     
+                    // MARK: - Monthly Budget (Power Feature)
+                    BudgetView(totalSpend: viewModel.currentMonthSpend, budget: $viewModel.monthlyBudget)
+                        .padding(.horizontal)
+                        .opacity(showContent ? 1 : 0)
+                        .offset(y: showContent ? 0 : 20)
+                    
                     // MARK: - Weekly Chart (Visual Analytics)
                     ChartView(data: viewModel.weeklyData)
                         .padding(.horizontal)
