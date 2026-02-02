@@ -69,29 +69,67 @@ class DashboardViewModel: ObservableObject {
     }
     
     func fetchData() {
-        let request = NSFetchRequest<Transaction>(entityName: "Transaction")
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)]
+        // A. UI DATA (Main Thread, Fast, Limited)
+        let uiRequest = NSFetchRequest<Transaction>(entityName: "Transaction")
+        uiRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)]
+        uiRequest.fetchLimit = 20 // Only show top 20 on dash
         
         do {
-            let transactions = try viewContext.fetch(request)
-            DispatchQueue.main.async {
-                self.recentTransactions = transactions
-                self.calculateMetrics(transactions: transactions)
-                self.detectSubscriptions(transactions: transactions)
-            }
+            self.recentTransactions = try viewContext.fetch(uiRequest)
         } catch {
-            print("Error fetching data: \(error)")
+            print("Error fetching UI data: \(error)")
+        }
+        
+        // B. ANALYTICS DATA (Background Thread, Heavy, All Data)
+        let bgContext = PersistenceController.shared.container.newBackgroundContext()
+        bgContext.perform {
+            let analyticsRequest = NSFetchRequest<Transaction>(entityName: "Transaction")
+            // No sort needed for math, usually faster
+            
+            do {
+                let allTransactions = try bgContext.fetch(analyticsRequest)
+                
+                // Perform heavy math on background thread
+                // We need to capture these results and pass them back
+                let metrics = self.calculateMetricsBlocking(transactions: allTransactions)
+                let subs = self.detectSubscriptionsBlocking(transactions: allTransactions)
+                
+                DispatchQueue.main.async {
+                    // Update UI
+                    self.totalSpend = metrics.total
+                    self.currentMonthSpend = metrics.month
+                    self.spendingByCategory = metrics.catTotals
+                    self.categoryData = metrics.pieData
+                    self.weeklyData = metrics.barData
+                    self.predictedSpend = metrics.forecast
+                    
+                    self.subscriptions = subs
+                    
+                    // Update learning state
+                    if allTransactions.count < 5 {
+                        self.isLearning = true
+                        self.learningProgress = "\(allTransactions.count)/5"
+                    } else {
+                        self.isLearning = false
+                    }
+                }
+            } catch {
+                print("Error calculating analytics: \(error)")
+            }
         }
     }
     
-    private func calculateMetrics(transactions: [Transaction]) {
+    // Pure function running on background thread
+    private func calculateMetricsBlocking(transactions: [Transaction]) -> MetricsResult {
+        var result = MetricsResult()
+        
         // 1. Total Spend (All Time)
-        self.totalSpend = transactions.reduce(0) { $0 + $1.amount }
+        result.total = transactions.reduce(0) { $0 + $1.amount }
         
         // 1b. Current Month Spend (For Budget)
         let calendar = Calendar.current
         let now = Date()
-        self.currentMonthSpend = transactions
+        result.month = transactions
             .filter { calendar.isDate($0.unwrappedDate, equalTo: now, toGranularity: .month) }
             .reduce(0) { $0 + $1.amount }
         
@@ -101,10 +139,10 @@ class DashboardViewModel: ObservableObject {
             let cat = t.unwrappedCategory
             catTotals[cat, default: 0] += t.amount
         }
-        self.spendingByCategory = catTotals
+        result.catTotals = catTotals
         
         // Convert to Chart Data
-        self.categoryData = catTotals.map { key, value in
+        result.pieData = catTotals.map { key, value in
             CategorySpend(category: key, amount: value)
         }.sorted(by: { $0.amount > $1.amount })
         
@@ -122,81 +160,38 @@ class DashboardViewModel: ObservableObject {
             
             last7Days.append(DailySpend(date: startOfDay, amount: dailyTotal))
         }
-        self.weeklyData = last7Days.reversed() // Oldest -> Newest
+        result.barData = last7Days.reversed()
         
-        // 4. Personalized Forecast (On-Device Statistical Learning)
+        // 4. Personalized Forecast
         let minRequired = 5
-        
-        if transactions.count < minRequired {
-            // Cold Start: Not enough data to be smart yet
-            self.isLearning = true
-            self.learningProgress = "\(transactions.count)/\(minRequired)"
-            self.predictedSpend = 0.0
-        } else {
-            self.isLearning = false
-            
-            // Algorithm: "What do I usually spend on this day of the week?"
+        if transactions.count >= minRequired {
             let weekday = Calendar.current.component(.weekday, from: Date())
-            
-            // Filter: Only past transactions from the same weekday (e.g., all previous Saturdays)
             let relevantTransactions = transactions.filter {
                 Calendar.current.component(.weekday, from: $0.unwrappedDate) == weekday
             }
             
-            if relevantTransactions.isEmpty {
-                self.predictedSpend = 0.0
-            } else {
-                // Aggregate: Group by specific Date to get Daily Totals
-                // (e.g. Sat Jan 1: $10+$5=$15; Sat Jan 8: $20. Average = $17.50)
+            if !relevantTransactions.isEmpty {
                 let groupedByDate = Dictionary(grouping: relevantTransactions) { t in
                     Calendar.current.startOfDay(for: t.unwrappedDate)
                 }
-                
                 let dailyTotals = groupedByDate.map { $0.value.reduce(0) { $0 + $1.amount } }
                 let total = dailyTotals.reduce(0, +)
-                let average = total / Double(dailyTotals.count)
-                
-                self.predictedSpend = average
+                result.forecast = total / Double(dailyTotals.count)
             }
         }
-    }
-
-    func save() {
-        do {
-            try viewContext.save()
-            fetchData()
-        } catch {
-            print("Error saving: \(error)")
-        }
-    }
-}
-
-// MARK: - Subscription Engine
-struct Subscription: Identifiable {
-    let id = UUID()
-    let merchant: String
-    let amount: Double
-    let occurences: Int
-    // Simple logic: If we see it > 1 times with same amount, it's a "Potential Subscription"
-}
-
-extension DashboardViewModel {
-    func detectSubscriptions(transactions: [Transaction]) {
-        // Group by Description (Approx Merchant)
-        let grouped = Dictionary(grouping: transactions, by: { $0.unwrappedDesc })
         
+        return result
+    }
+
+    private func detectSubscriptionsBlocking(transactions: [Transaction]) -> [Subscription] {
+        let grouped = Dictionary(grouping: transactions, by: { $0.unwrappedDesc })
         var detected: [Subscription] = []
         
         for (merchant, txs) in grouped {
-            // Check if multiple occurrences
             if txs.count > 1 {
-                // Check if amounts are consistent (or mostly consistent)
-                // For MVP, just check if the most common amount appears > 1 times
                 let amountCounts = Dictionary(grouping: txs, by: { $0.amount })
                 if let frequentAmount = amountCounts.max(by: { $0.value.count < $1.value.count }),
                    frequentAmount.value.count > 1 {
-                    
-                    // It's a candidate
                     detected.append(Subscription(
                         merchant: merchant,
                         amount: frequentAmount.key,
@@ -205,8 +200,16 @@ extension DashboardViewModel {
                 }
             }
         }
-        
-        // Sort by amount (Big subs first)
-        self.subscriptions = detected.sorted(by: { $0.amount > $1.amount })
+        return detected.sorted(by: { $0.amount > $1.amount })
     }
+}
+
+// Helper Struct for passing data back from Background Thread
+struct MetricsResult {
+    var total: Double = 0.0
+    var month: Double = 0.0
+    var catTotals: [String: Double] = [:]
+    var pieData: [CategorySpend] = []
+    var barData: [DailySpend] = []
+    var forecast: Double = 0.0
 }
