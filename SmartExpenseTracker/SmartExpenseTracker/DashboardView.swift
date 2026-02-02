@@ -4,6 +4,7 @@ import CoreData
 struct DashboardView: View {
     @StateObject private var viewModel: DashboardViewModel
     @StateObject private var insightsViewModel = InsightsViewModel()
+    @State private var showContent = false
     @State private var showAddSheet = false
     
     init(context: NSManagedObjectContext) {
@@ -41,8 +42,26 @@ struct DashboardView: View {
                         }
                     }
                     .padding(.top, 20)
+                    .opacity(showContent ? 1 : 0)
+                    .offset(y: showContent ? 0 : 20)
                     
-                    // MARK: - Insights Carousel (New)
+                    // MARK: - Weekly Chart (Visual Analytics)
+                    ChartView(data: viewModel.weeklyData)
+                        .padding(.horizontal)
+                        .accessibilityElement(children: .contain)
+                        .accessibilityLabel("Weekly Spending Chart")
+                        .opacity(showContent ? 1 : 0)
+                        .offset(y: showContent ? 0 : 20)
+
+                    // MARK: - Spending Mix (Donut)
+                    if !viewModel.categoryData.isEmpty {
+                        PieChartView(data: viewModel.categoryData)
+                            .padding(.horizontal)
+                            .opacity(showContent ? 1 : 0)
+                            .offset(y: showContent ? 0 : 30) // Slightly delayed offset effect
+                    }
+
+                    // MARK: - Insights Carousel
                     if !insightsViewModel.insights.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 12) {
@@ -87,6 +106,7 @@ struct DashboardView: View {
                             .padding(.trailing, 8)
                             
                             Button {
+                                HapticManager.shared.impact(style: .medium)
                                 showAddSheet = true
                             } label: {
                                 Image(systemName: "plus.circle.fill")
@@ -142,6 +162,12 @@ struct DashboardView: View {
         }
         .onAppear {
             viewModel.fetchData()
+            
+            // Animate In
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                showContent = true
+            }
+            
             // Initial insight generation
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 insightsViewModel.generateInsights(transactions: viewModel.recentTransactions)

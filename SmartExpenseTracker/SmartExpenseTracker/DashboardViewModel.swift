@@ -1,13 +1,46 @@
 import Foundation
-import CoreData
+import SwiftUI
 import Combine
 import CoreML
+import CoreData
+
+struct CategorySpend: Identifiable {
+    let id = UUID()
+    let category: String
+    let amount: Double
+    var color: Color {
+        // Match user's specific categories
+        switch category {
+        case "Food & Drink", "Dining", "Coffee": return .orange
+        case "Groceries", "Grocery": return .green
+        case "Shopping": return .pink
+        case "Travel", "Transport": return .blue
+        case "Bills", "Utilities", "Rent": return .purple
+        case "Entertainment", "Movies": return .indigo
+        case "Health", "Gym": return .red
+        default: return .gray
+        }
+    }
+}
+
+struct DailySpend: Identifiable {
+    let id = UUID()
+    let date: Date
+    let amount: Double
+    var dayName: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE"
+        return formatter.string(from: date)
+    }
+}
 
 class DashboardViewModel: ObservableObject {
     @Published var recentTransactions: [Transaction] = []
     @Published var totalSpend: Double = 0.0
     @Published var predictedSpend: Double = 0.0
     @Published var spendingByCategory: [String: Double] = [:]
+    @Published var weeklyData: [DailySpend] = [] // For Bar Chart
+    @Published var categoryData: [CategorySpend] = [] // For Pie Chart
     
     // Models
     // private var categorizer: ExpenseCategorizer?
@@ -51,7 +84,28 @@ class DashboardViewModel: ObservableObject {
         }
         self.spendingByCategory = catTotals
         
-        // 3. Personalized Forecast (On-Device Statistical Learning)
+        // Convert to Chart Data
+        self.categoryData = catTotals.map { key, value in
+            CategorySpend(category: key, amount: value)
+        }.sorted(by: { $0.amount > $1.amount })
+        
+        // 3. Weekly Chart Data (Rolling 7 Days)
+        var last7Days: [DailySpend] = []
+        let calendar = Calendar.current
+        for i in 0..<7 {
+            let date = calendar.date(byAdding: .day, value: -i, to: Date())!
+            let startOfDay = calendar.startOfDay(for: date)
+            
+            // Sum transactions for this specific day
+            let dailyTotal = transactions
+                .filter { calendar.isDate($0.unwrappedDate, inSameDayAs: date) }
+                .reduce(0) { $0 + $1.amount }
+            
+            last7Days.append(DailySpend(date: startOfDay, amount: dailyTotal))
+        }
+        self.weeklyData = last7Days.reversed() // Oldest -> Newest
+        
+        // 4. Personalized Forecast (On-Device Statistical Learning)
         let minRequired = 5
         
         if transactions.count < minRequired {
