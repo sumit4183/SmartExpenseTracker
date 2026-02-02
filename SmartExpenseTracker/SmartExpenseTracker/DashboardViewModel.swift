@@ -42,6 +42,7 @@ class DashboardViewModel: ObservableObject {
     @Published var spendingByCategory: [String: Double] = [:]
     @Published var weeklyData: [DailySpend] = [] // For Bar Chart
     @Published var categoryData: [CategorySpend] = [] // For Pie Chart
+    @Published var subscriptions: [Subscription] = [] // Detected Subscriptions
     
     // Budgeting (Power Feature)
     @Published var monthlyBudget: Double {
@@ -76,6 +77,7 @@ class DashboardViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self.recentTransactions = transactions
                 self.calculateMetrics(transactions: transactions)
+                self.detectSubscriptions(transactions: transactions)
             }
         } catch {
             print("Error fetching data: \(error)")
@@ -166,5 +168,45 @@ class DashboardViewModel: ObservableObject {
         } catch {
             print("Error saving: \(error)")
         }
+    }
+}
+
+// MARK: - Subscription Engine
+struct Subscription: Identifiable {
+    let id = UUID()
+    let merchant: String
+    let amount: Double
+    let occurences: Int
+    // Simple logic: If we see it > 1 times with same amount, it's a "Potential Subscription"
+}
+
+extension DashboardViewModel {
+    func detectSubscriptions(transactions: [Transaction]) {
+        // Group by Description (Approx Merchant)
+        let grouped = Dictionary(grouping: transactions, by: { $0.unwrappedDesc })
+        
+        var detected: [Subscription] = []
+        
+        for (merchant, txs) in grouped {
+            // Check if multiple occurrences
+            if txs.count > 1 {
+                // Check if amounts are consistent (or mostly consistent)
+                // For MVP, just check if the most common amount appears > 1 times
+                let amountCounts = Dictionary(grouping: txs, by: { $0.amount })
+                if let frequentAmount = amountCounts.max(by: { $0.value.count < $1.value.count }),
+                   frequentAmount.value.count > 1 {
+                    
+                    // It's a candidate
+                    detected.append(Subscription(
+                        merchant: merchant,
+                        amount: frequentAmount.key,
+                        occurences: frequentAmount.value.count
+                    ))
+                }
+            }
+        }
+        
+        // Sort by amount (Big subs first)
+        self.subscriptions = detected.sorted(by: { $0.amount > $1.amount })
     }
 }

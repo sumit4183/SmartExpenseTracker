@@ -51,6 +51,14 @@ struct DashboardView: View {
                         .opacity(showContent ? 1 : 0)
                         .offset(y: showContent ? 0 : 20)
                     
+                    // MARK: - Recurring Subscriptions (Power Feature)
+                    if !viewModel.subscriptions.isEmpty {
+                        SubscriptionView(subscriptions: viewModel.subscriptions)
+                            .padding(.horizontal)
+                            .opacity(showContent ? 1 : 0)
+                            .offset(y: showContent ? 0 : 25)
+                    }
+                    
                     // MARK: - Weekly Chart (Visual Analytics)
                     ChartView(data: viewModel.weeklyData)
                         .padding(.horizontal)
