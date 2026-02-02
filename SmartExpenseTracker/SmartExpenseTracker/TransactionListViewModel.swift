@@ -11,6 +11,22 @@ class TransactionListViewModel: ObservableObject {
         }
     }
     
+    // Design Polish: Sorting & Filtering
+    enum SortOption: String, CaseIterable, Identifiable {
+        case newest = "Date (New)"
+        case oldest = "Date (Old)"
+        case highest = "Amount (High)"
+        case lowest = "Amount (Low)"
+        var id: String { rawValue }
+    }
+    
+    @Published var sortOption: SortOption = .newest { didSet { fetchData() } }
+    @Published var selectedCategory: String? = nil { didSet { fetchData() } }
+    @Published var categories: [String] = [
+        "Food & Drink", "Groceries", "Transport", "Shopping",
+        "Utilities", "Entertainment", "Health", "Travel", "Rent", "Salary"
+    ] 
+    
     private let viewContext: NSManagedObjectContext
     
     init(context: NSManagedObjectContext) {
@@ -20,11 +36,32 @@ class TransactionListViewModel: ObservableObject {
     
     func fetchData() {
         let request = NSFetchRequest<Transaction>(entityName: "Transaction")
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)]
         
-        // Add Search Filter
+        // 1. Predicates
+        var predicates: [NSPredicate] = []
+        
         if !searchText.isEmpty {
-            request.predicate = NSPredicate(format: "desc CONTAINS[cd] %@ OR category CONTAINS[cd] %@", searchText, searchText)
+            predicates.append(NSPredicate(format: "desc CONTAINS[cd] %@ OR category CONTAINS[cd] %@", searchText, searchText))
+        }
+        
+        if let category = selectedCategory {
+            predicates.append(NSPredicate(format: "category == %@", category))
+        }
+        
+        if !predicates.isEmpty {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        }
+        
+        // 2. Sorting
+        switch sortOption {
+        case .newest:
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)]
+        case .oldest:
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: true)]
+        case .highest:
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.amount, ascending: false)]
+        case .lowest:
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.amount, ascending: true)]
         }
         
         do {
@@ -36,7 +73,14 @@ class TransactionListViewModel: ObservableObject {
     }
     
     private func groupTransactions(_ transactions: [Transaction]) {
-        // Group by Date (formatted string)
+        // If sorting by Amount, don't chop into days (it makes ranking hard to see)
+        if sortOption == .highest || sortOption == .lowest {
+            self.transactionSections = ["All Transactions": transactions]
+            self.sectionHeaders = ["All Transactions"]
+            return
+        }
+        
+        // Normal Date Grouping
         let grouped = Dictionary(grouping: transactions) { (transaction) -> String in
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
@@ -51,14 +95,12 @@ class TransactionListViewModel: ObservableObject {
             }
         }
         
-        // Store
         self.transactionSections = grouped
-        // Sort sections by date logic is a bit tricky with strings, 
-        // so we sort based on the first transaction in each group
+        // Sort headers based on Date option
         self.sectionHeaders = grouped.keys.sorted { (dateStr1, dateStr2) -> Bool in
             let t1 = grouped[dateStr1]?.first?.unwrappedDate ?? Date()
             let t2 = grouped[dateStr2]?.first?.unwrappedDate ?? Date()
-            return t1 > t2 // Newest dates first
+            return sortOption == .oldest ? t1 < t2 : t1 > t2
         }
     }
     
