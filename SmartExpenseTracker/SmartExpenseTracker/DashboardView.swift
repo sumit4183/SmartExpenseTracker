@@ -33,12 +33,38 @@ struct DashboardView: View {
                                 .padding(.vertical, 4)
                                 .background(Color.orange.opacity(0.1), in: Capsule())
                         } else {
-                            Text("Forecast: \(viewModel.predictedSpend.formatted(.currency(code: "USD")))")
-                                .font(.caption)
-                                .foregroundStyle(.primary)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 4)
-                                .background(Color.blue.opacity(0.1), in: Capsule())
+                            VStack(spacing: 4) {
+                                Text("Forecast: \(viewModel.predictedSpend.formatted(.currency(code: "USD")))")
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+                                
+                                HStack(spacing: 4) {
+                                    // Confidence Chip
+                                    HStack(spacing: 4) {
+                                        Image(systemName: viewModel.forecastConfidence > 0.8 ? "checkmark.shield.fill" : "exclamationmark.shield.fill")
+                                            .font(.caption2)
+                                        Text(viewModel.forecastConfidence > 0.8 ? "High Confidence" : (viewModel.forecastConfidence > 0.5 ? "Medium Confidence" : "Low Confidence"))
+                                            .font(.caption2)
+                                            .fontWeight(.bold)
+                                    }
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        (viewModel.forecastConfidence > 0.8 ? Color.green : (viewModel.forecastConfidence > 0.5 ? Color.orange : Color.red)).opacity(0.1),
+                                        in: Capsule()
+                                    )
+                                    .foregroundStyle(viewModel.forecastConfidence > 0.8 ? .green : (viewModel.forecastConfidence > 0.5 ? .orange : .red))
+                                }
+                                
+                                Text(viewModel.forecastReason)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.top, 2)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.blue.opacity(0.05), in: RoundedRectangle(cornerRadius: 12))
                         }
                     }
                     .padding(.top, 20)

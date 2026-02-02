@@ -42,7 +42,11 @@ class DashboardViewModel: ObservableObject {
     @Published var spendingByCategory: [String: Double] = [:]
     @Published var weeklyData: [DailySpend] = [] // For Bar Chart
     @Published var categoryData: [CategorySpend] = [] // For Pie Chart
-    @Published var subscriptions: [Subscription] = [] // Detected Subscriptions
+    @Published var subscriptions: [ExpenseSubscription] = [] // Detected Subscriptions
+    
+    // AI Explainability (Phase 2.4)
+    @Published var forecastConfidence: Double = 0.0 // 0.0 to 1.0
+    @Published var forecastReason: String = "Gathering data..."
     
     // Budgeting (Power Feature)
     @Published var monthlyBudget: Double {
@@ -102,6 +106,8 @@ class DashboardViewModel: ObservableObject {
                     self.categoryData = metrics.pieData
                     self.weeklyData = metrics.barData
                     self.predictedSpend = metrics.forecast
+                    self.forecastConfidence = metrics.forecastConfidence
+                    self.forecastReason = metrics.forecastReason
                     
                     self.subscriptions = subs
                     
@@ -118,6 +124,18 @@ class DashboardViewModel: ObservableObject {
             }
         }
     }
+}
+
+// MARK: - Subscription Engine
+struct ExpenseSubscription: Identifiable {
+    let id = UUID()
+    let merchant: String
+    let amount: Double
+    let occurences: Int
+    // Simple logic: If we see it > 1 times with same amount, it's a "Potential Subscription"
+}
+
+extension DashboardViewModel {
     
     // Pure function running on background thread
     private func calculateMetricsBlocking(transactions: [Transaction]) -> MetricsResult {
@@ -163,9 +181,15 @@ class DashboardViewModel: ObservableObject {
         result.barData = last7Days.reversed()
         
         // 4. Personalized Forecast
-        let minRequired = 5
+        let minRequired = 3 // Reduced threshold for demo
+        result.forecast = 0.0
+        result.forecastConfidence = 0.0
+        result.forecastReason = "Not enough data"
+        
         if transactions.count >= minRequired {
             let weekday = Calendar.current.component(.weekday, from: Date())
+            let weekdayName = DateFormatter().weekdaySymbols[weekday - 1]
+            
             let relevantTransactions = transactions.filter {
                 Calendar.current.component(.weekday, from: $0.unwrappedDate) == weekday
             }
@@ -174,25 +198,65 @@ class DashboardViewModel: ObservableObject {
                 let groupedByDate = Dictionary(grouping: relevantTransactions) { t in
                     Calendar.current.startOfDay(for: t.unwrappedDate)
                 }
+                
+                // Get daily totals for this weekday (e.g., [15.0, 20.0, 18.0])
                 let dailyTotals = groupedByDate.map { $0.value.reduce(0) { $0 + $1.amount } }
+                
+                // 1. Mean
                 let total = dailyTotals.reduce(0, +)
-                result.forecast = total / Double(dailyTotals.count)
+                let mean = total / Double(dailyTotals.count)
+                
+                if dailyTotals.count > 1 {
+                    // 2. Standard Deviation
+                    let variance = dailyTotals.map { pow($0 - mean, 2) }.reduce(0, +) / Double(dailyTotals.count)
+                    let stdDev = sqrt(variance)
+                    
+                    // 3. Coefficient of Variation (Volatility)
+                    // If mean is 0, avoid division by zero
+                    let cv = mean > 0 ? stdDev / mean : 0
+                    
+                    // 4. Confidence Score (Higher volatility = Lower confidence)
+                    // CV of 0.0 (Perfect) -> 100%
+                    // CV of 0.5 (High variance) -> 50%
+                    // CV of 1.0+ (Erratic) -> 20%
+                    let rawConfidence = max(0.2, 1.0 - cv)
+                    
+                    // Penalty for low data count
+                    let countPenalty = min(1.0, Double(dailyTotals.count) / 10.0) // 10 samples for full trust
+                    
+                    result.forecast = mean
+                    result.forecastConfidence = rawConfidence * countPenalty
+                    
+                    // 5. Reasoning
+                    if cv < 0.2 {
+                        result.forecastReason = "Your spending on \(weekdayName)s is very consistent."
+                    } else if cv < 0.5 {
+                        result.forecastReason = "Spending on \(weekdayName)s varies slightly."
+                    } else {
+                        result.forecastReason = "Your \(weekdayName) spending is erratic (High Variance)."
+                    }
+                } else {
+                    // Single data point
+                    result.forecast = mean
+                    result.forecastConfidence = 0.4 // Low trust
+                    result.forecastReason = "Only one past \(weekdayName) found."
+                }
             }
         }
         
         return result
     }
 
-    private func detectSubscriptionsBlocking(transactions: [Transaction]) -> [Subscription] {
+    private func detectSubscriptionsBlocking(transactions: [Transaction]) -> [ExpenseSubscription] {
         let grouped = Dictionary(grouping: transactions, by: { $0.unwrappedDesc })
-        var detected: [Subscription] = []
+        var detected: [ExpenseSubscription] = []
         
         for (merchant, txs) in grouped {
             if txs.count > 1 {
                 let amountCounts = Dictionary(grouping: txs, by: { $0.amount })
                 if let frequentAmount = amountCounts.max(by: { $0.value.count < $1.value.count }),
                    frequentAmount.value.count > 1 {
-                    detected.append(Subscription(
+                    detected.append(ExpenseSubscription(
                         merchant: merchant,
                         amount: frequentAmount.key,
                         occurences: frequentAmount.value.count
@@ -212,4 +276,6 @@ struct MetricsResult {
     var pieData: [CategorySpend] = []
     var barData: [DailySpend] = []
     var forecast: Double = 0.0
+    var forecastConfidence: Double = 0.0
+    var forecastReason: String = ""
 }

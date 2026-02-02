@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SubscriptionView: View {
-    let subscriptions: [Subscription]
+    let subscriptions: [ExpenseSubscription]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -59,8 +59,8 @@ struct SubscriptionView: View {
 
 #Preview {
     SubscriptionView(subscriptions: [
-        Subscription(merchant: "Netflix", amount: 15.99, occurences: 3),
-        Subscription(merchant: "Spotify", amount: 9.99, occurences: 5)
+        ExpenseSubscription(merchant: "Netflix", amount: 15.99, occurences: 3),
+        ExpenseSubscription(merchant: "Spotify", amount: 9.99, occurences: 5)
     ])
     .padding()
 }
