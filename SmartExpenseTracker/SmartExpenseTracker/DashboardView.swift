@@ -16,7 +16,7 @@ struct DashboardView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     
-                    // MARK: - Header Card
+                    // MARK: - Header Card (Spend & Trend)
                     VStack(spacing: 8) {
                         Text("Total Spend")
                             .font(.subheadline)
@@ -25,51 +25,81 @@ struct DashboardView: View {
                             .font(.system(size: 44, weight: .bold, design: .rounded))
                             .contentTransition(.numericText())
                         
-                        if viewModel.isLearning {
-                             Text("AI Learning... (\(viewModel.learningProgress))")
-                                .font(.caption)
-                                .foregroundStyle(.orange)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 4)
-                                .background(Color.orange.opacity(0.1), in: Capsule())
-                        } else {
+                        // Sparkline Trend (Last 7 Days)
+                        if !viewModel.weeklyData.isEmpty {
                             VStack(spacing: 4) {
-                                Text("Forecast: \(viewModel.predictedSpend.formatted(.currency(code: "USD")))")
-                                    .font(.headline)
-                                    .foregroundStyle(.primary)
+                                SparklineView(
+                                    data: viewModel.weeklyData.map { $0.amount },
+                                    color: .blue,
+                                    labels: viewModel.weeklyData.map { $0.dayName }
+                                )
+                                .frame(height: 50)
+                                .padding(.horizontal, 20)
                                 
-                                HStack(spacing: 4) {
-                                    // Confidence Chip
-                                    HStack(spacing: 4) {
-                                        Image(systemName: viewModel.forecastConfidence > 0.8 ? "checkmark.shield.fill" : "exclamationmark.shield.fill")
-                                            .font(.caption2)
-                                        Text(viewModel.forecastConfidence > 0.8 ? "High Confidence" : (viewModel.forecastConfidence > 0.5 ? "Medium Confidence" : "Low Confidence"))
-                                            .font(.caption2)
-                                            .fontWeight(.bold)
-                                    }
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 2)
-                                    .background(
-                                        (viewModel.forecastConfidence > 0.8 ? Color.green : (viewModel.forecastConfidence > 0.5 ? Color.orange : Color.red)).opacity(0.1),
-                                        in: Capsule()
-                                    )
-                                    .foregroundStyle(viewModel.forecastConfidence > 0.8 ? .green : (viewModel.forecastConfidence > 0.5 ? .orange : .red))
+                                HStack {
+                                    Text("Last 7 Days (Trend)")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                    Spacer()
+                                    // Calculate Avg
+                                    let total7 = viewModel.weeklyData.reduce(0) { $0 + $1.amount }
+                                    let avg7 = total7 / Double(max(1, viewModel.weeklyData.count))
+                                    Text("Avg: \(avg7.formatted(.currency(code: "USD")))/day")
+                                        .font(.caption2)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.secondary)
                                 }
-                                
-                                Text(viewModel.forecastReason)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.top, 2)
+                                .padding(.horizontal, 40)
                             }
-                            .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(Color.blue.opacity(0.05), in: RoundedRectangle(cornerRadius: 12))
                         }
                     }
                     .padding(.top, 20)
                     .opacity(showContent ? 1 : 0)
                     .offset(y: showContent ? 0 : 20)
+                    
+                    // MARK: - AI Forecast Pill
+                    if !viewModel.isLearning {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Predicted")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .textCase(.uppercase)
+                                Text(viewModel.predictedSpend, format: .currency(code: "USD"))
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                            }
+                            
+                            Spacer()
+                            
+                            // Confidence Chip
+                            HStack(spacing: 6) {
+                                Image(systemName: viewModel.forecastConfidence > 0.8 ? "checkmark.shield.fill" : "exclamationmark.shield.fill")
+                                    .font(.caption2)
+                                    .foregroundStyle(viewModel.forecastConfidence > 0.8 ? .green : .orange)
+                                
+                                Text(viewModel.forecastReason)
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color(.systemGray6), in: Capsule())
+                        }
+                        .padding()
+                        .background(Color.purple.opacity(0.05), in: RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal)
+                        .opacity(showContent ? 1 : 0)
+                        .offset(y: showContent ? 0 : 25)
+                    } else {
+                         Text("AI Learning... (\(viewModel.learningProgress))")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                            .padding(.vertical, 8)
+                    }
                     
                     // MARK: - Monthly Budget (Power Feature)
                     BudgetView(totalSpend: viewModel.currentMonthSpend, budget: $viewModel.monthlyBudget)
@@ -85,13 +115,7 @@ struct DashboardView: View {
                             .offset(y: showContent ? 0 : 25)
                     }
                     
-                    // MARK: - Weekly Chart (Visual Analytics)
-                    ChartView(data: viewModel.weeklyData)
-                        .padding(.horizontal)
-                        .accessibilityElement(children: .contain)
-                        .accessibilityLabel("Weekly Spending Chart")
-                        .opacity(showContent ? 1 : 0)
-                        .offset(y: showContent ? 0 : 20)
+
 
                     // MARK: - Spending Mix (Donut)
                     if !viewModel.categoryData.isEmpty {
