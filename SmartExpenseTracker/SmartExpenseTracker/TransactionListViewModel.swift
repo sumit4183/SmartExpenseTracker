@@ -12,6 +12,15 @@ class TransactionListViewModel: ObservableObject {
     }
     
     // Design Polish: Sorting & Filtering
+    enum FilterOption: String, CaseIterable, Identifiable {
+        case all = "All"
+        case expense = "Expense"
+        case income = "Income"
+        var id: String { rawValue }
+    }
+    
+    @Published var selectedFilter: FilterOption = .all { didSet { fetchData() } }
+    
     enum SortOption: String, CaseIterable, Identifiable {
         case newest = "Date (New)"
         case oldest = "Date (Old)"
@@ -46,6 +55,10 @@ class TransactionListViewModel: ObservableObject {
         
         if let category = selectedCategory {
             predicates.append(NSPredicate(format: "category == %@", category))
+        }
+        
+        if selectedFilter != .all {
+            predicates.append(NSPredicate(format: "type == %@", selectedFilter.rawValue.lowercased()))
         }
         
         if !predicates.isEmpty {

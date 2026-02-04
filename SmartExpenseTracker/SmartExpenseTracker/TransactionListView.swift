@@ -10,6 +10,16 @@ struct TransactionListView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            // 0. Filter Pivot (All / Expense / Income)
+            Picker("Filter", selection: $viewModel.selectedFilter) {
+                ForEach(TransactionListViewModel.FilterOption.allCases) { option in
+                    Text(option.rawValue).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            .padding(.top, 10)
+            
             // 1. Categories Toolbar
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -140,6 +150,8 @@ struct TransactionListView: View {
                                 Spacer()
                                 
                                 Text(transaction.formattedAmount)
+                                    .fontWeight(transaction.typeEnum == .income ? .bold : .regular)
+                                    .foregroundStyle(transaction.typeEnum == .income ? Color.green : Color.primary)
                             }
                         }
                         .onDelete { offsets in
