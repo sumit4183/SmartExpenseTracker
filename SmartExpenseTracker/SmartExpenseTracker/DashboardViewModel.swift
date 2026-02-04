@@ -37,6 +37,8 @@ struct DailySpend: Identifiable {
 class DashboardViewModel: ObservableObject {
     @Published var recentTransactions: [Transaction] = []
     @Published var totalSpend: Double = 0.0
+    @Published var totalIncome: Double = 0.0
+    @Published var netSavings: Double = 0.0
     @Published var currentMonthSpend: Double = 0.0 // For Budget
     @Published var predictedSpend: Double = 0.0
     @Published var spendingByCategory: [String: Double] = [:]
@@ -101,6 +103,8 @@ class DashboardViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     // Update UI
                     self.totalSpend = metrics.total
+                    self.totalIncome = metrics.totalIncome
+                    self.netSavings = metrics.netSavings
                     self.currentMonthSpend = metrics.month
                     self.spendingByCategory = metrics.catTotals
                     self.categoryData = metrics.pieData
@@ -141,19 +145,24 @@ extension DashboardViewModel {
     private func calculateMetricsBlocking(transactions: [Transaction]) -> MetricsResult {
         var result = MetricsResult()
         
-        // 1. Total Spend (All Time)
-        result.total = transactions.reduce(0) { $0 + $1.amount }
+        let expenses = transactions.filter { $0.typeEnum == .expense }
+        let incomes = transactions.filter { $0.typeEnum == .income }
         
-        // 1b. Current Month Spend (For Budget)
+        // 1. Total Spend & Income (All Time)
+        result.total = expenses.reduce(0) { $0 + $1.amount }
+        result.totalIncome = incomes.reduce(0) { $0 + $1.amount }
+        result.netSavings = result.totalIncome - result.total
+        
+        // 1b. Current Month Spend (For Budget) - EXPENSES ONLY
         let calendar = Calendar.current
         let now = Date()
-        result.month = transactions
+        result.month = expenses
             .filter { calendar.isDate($0.unwrappedDate, equalTo: now, toGranularity: .month) }
             .reduce(0) { $0 + $1.amount }
         
-        // 2. Spending by Category
+        // 2. Spending by Category - EXPENSES ONLY
         var catTotals: [String: Double] = [:]
-        for t in transactions {
+        for t in expenses {
             let cat = t.unwrappedCategory
             catTotals[cat, default: 0] += t.amount
         }
@@ -271,6 +280,8 @@ extension DashboardViewModel {
 // Helper Struct for passing data back from Background Thread
 struct MetricsResult {
     var total: Double = 0.0
+    var totalIncome: Double = 0.0
+    var netSavings: Double = 0.0
     var month: Double = 0.0
     var catTotals: [String: Double] = [:]
     var pieData: [CategorySpend] = []

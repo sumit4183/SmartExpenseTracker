@@ -2,9 +2,32 @@ import Foundation
 import CoreData
 import SwiftUI
 
+public enum TransactionType: String, CaseIterable, Identifiable {
+    case expense = "expense"
+    case income = "income"
+    public var id: String { rawValue }
+}
+
 extension Transaction {
     
     // MARK: - Safe Accessors
+    
+    public var typeEnum: TransactionType {
+        get {
+            // Safety Check: Verify 'type' exists in the Core Data Model
+            // This prevents the "valueForUndefinedKey" crash if the Attribute is missing
+            if self.entity.attributesByName.keys.contains("type") {
+                let typeString = self.value(forKey: "type") as? String
+                return TransactionType(rawValue: typeString ?? "expense") ?? .expense
+            }
+            return .expense // Fallback if schema is outdated
+        }
+        set {
+            if self.entity.attributesByName.keys.contains("type") {
+                self.setValue(newValue.rawValue, forKey: "type")
+            }
+        }
+    }
     
     public var unwrappedDesc: String {
         desc ?? "Unknown"

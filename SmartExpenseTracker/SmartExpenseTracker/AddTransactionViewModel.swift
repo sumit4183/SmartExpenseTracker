@@ -5,6 +5,17 @@ import Combine
 
 class AddTransactionViewModel: ObservableObject {
     @Published var amount: String = ""
+    @Published var type: TransactionType = .expense {
+        didSet {
+            // Smart defaults when switching types
+            if type == .income {
+                selectedCategory = "Salary"
+            } else {
+                selectedCategory = "Uncategorized"
+                predictCategory() // Re-run prediction for expense
+            }
+        }
+    }
     @Published var description: String = "" {
         didSet {
             // Trigger auto-categorization when user types
@@ -36,6 +47,9 @@ class AddTransactionViewModel: ObservableObject {
     
     // MARK: - ML Inference
     private func predictCategory() {
+        // AI Logic: Only predict for Expenses. Income is simple.
+        guard type == .expense else { return }
+        
         guard !description.isEmpty, let model = categorizer else { return }
         
         // Simple heuristic: don't predict for very short strings
@@ -80,6 +94,7 @@ class AddTransactionViewModel: ObservableObject {
         newTransaction.amount = amountDouble
         newTransaction.desc = description
         newTransaction.category = selectedCategory
+        newTransaction.typeEnum = type
         // Mark it as an anomaly if we forced it through
         newTransaction.isAnomaly = isAnomalyConfirmed 
         

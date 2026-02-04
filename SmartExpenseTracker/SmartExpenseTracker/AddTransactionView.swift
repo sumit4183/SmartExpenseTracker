@@ -14,6 +14,14 @@ struct AddTransactionView: View {
             Form {
                 // MARK: - Amount Section
                 Section {
+                    Picker("Type", selection: $viewModel.type) {
+                        ForEach(TransactionType.allCases) { type in
+                            Text(type.rawValue.capitalized).tag(type)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.vertical, 8)
+                    
                     TextField("0.00", text: $viewModel.amount)
                         .keyboardType(.decimalPad)
                         .font(.system(size: 32, weight: .bold))

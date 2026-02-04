@@ -18,12 +18,32 @@ struct DashboardView: View {
                     
                     // MARK: - Header Card (Spend & Trend)
                     VStack(spacing: 8) {
-                        Text("Total Spend")
+                        Text("Net Balance")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        Text(viewModel.totalSpend, format: .currency(code: "USD"))
+                        Text(viewModel.netSavings, format: .currency(code: "USD"))
                             .font(.system(size: 44, weight: .bold, design: .rounded))
+                            .foregroundStyle(viewModel.netSavings >= 0 ? Color.primary : Color.red)
                             .contentTransition(.numericText())
+                        
+                        HStack(spacing: 20) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.down.left.circle.fill")
+                                    .foregroundStyle(.green)
+                                Text(viewModel.totalIncome, format: .currency(code: "USD"))
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                            }
+                            
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.up.right.circle.fill")
+                                    .foregroundStyle(.red)
+                                Text(viewModel.totalSpend, format: .currency(code: "USD"))
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                            }
+                        }
+                        .padding(.bottom, 8)
                         
                         // Sparkline Trend (Last 7 Days)
                         if !viewModel.weeklyData.isEmpty {
