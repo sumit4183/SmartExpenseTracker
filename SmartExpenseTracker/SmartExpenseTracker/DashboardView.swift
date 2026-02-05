@@ -2,13 +2,13 @@ import SwiftUI
 import CoreData
 
 struct DashboardView: View {
-    @StateObject private var viewModel: DashboardViewModel
+    @ObservedObject var viewModel: DashboardViewModel
     @StateObject private var insightsViewModel = InsightsViewModel()
     @State private var showContent = false
     @State private var showAddSheet = false
     
-    init(context: NSManagedObjectContext) {
-        _viewModel = StateObject(wrappedValue: DashboardViewModel(context: context))
+    init(viewModel: DashboardViewModel) {
+        self.viewModel = viewModel
     }
     
     var body: some View {
@@ -137,13 +137,7 @@ struct DashboardView: View {
                     
 
 
-                    // MARK: - Spending Mix (Donut)
-                    if !viewModel.categoryData.isEmpty {
-                        PieChartView(data: viewModel.categoryData)
-                            .padding(.horizontal)
-                            .opacity(showContent ? 1 : 0)
-                            .offset(y: showContent ? 0 : 30) // Slightly delayed offset effect
-                    }
+
 
                     // MARK: - Insights Carousel
                     if !insightsViewModel.insights.isEmpty {
@@ -181,13 +175,7 @@ struct DashboardView: View {
                                 .font(.headline)
                             Spacer()
                             
-                            // See All Button
-                            NavigationLink(destination: TransactionListView(context: viewModel.viewContext)) {
-                                Text("See All")
-                                    .font(.subheadline)
-                                    .foregroundColor(.blue)
-                            }
-                            .padding(.trailing, 8)
+                            // Redundant "See All" removed (Use History Tab)
                             
                             Button {
                                 HapticManager.shared.impact(style: .medium)
@@ -261,5 +249,5 @@ struct DashboardView: View {
 }
 
 #Preview {
-    DashboardView(context: PersistenceController.preview.container.viewContext)
+    DashboardView(viewModel: DashboardViewModel(context: PersistenceController.preview.container.viewContext))
 }
