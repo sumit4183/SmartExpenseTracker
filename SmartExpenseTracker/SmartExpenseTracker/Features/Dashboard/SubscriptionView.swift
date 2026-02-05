@@ -3,14 +3,25 @@ import SwiftUI
 struct SubscriptionView: View {
     let subscriptions: [ExpenseSubscription]
     
+    var totalRecurring: Double {
+        subscriptions.reduce(0) { $0 + $1.amount }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Monthly Subscriptions")
+                        .font(.headline)
+                    Text("Total: \(totalRecurring.formatted(.currency(code: "USD")))/mo")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Spacer()
+                
                 Image(systemName: "arrow.triangle.2.circlepath")
                     .foregroundColor(.blue)
-                Text("Recurring (Detected)")
-                    .font(.headline)
-                Spacer()
             }
             
             if subscriptions.isEmpty {

@@ -257,22 +257,57 @@ extension DashboardViewModel {
     }
 
     private func detectSubscriptionsBlocking(transactions: [Transaction]) -> [ExpenseSubscription] {
-        let grouped = Dictionary(grouping: transactions, by: { $0.unwrappedDesc })
+        // Filter for expenses only
+        let expenses = transactions.filter { $0.typeEnum == .expense }
+        
+        // 1. Normalize Descriptions (Simple Fuzzy Match)
+        // e.g. "Netflix #1123" -> "netflix"
+        func normalize(_ text: String) -> String {
+            return text.lowercased()
+                .components(separatedBy: CharacterSet.decimalDigits).joined()
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        var candidates: [String: [Transaction]] = [:]
+        
+        for t in expenses {
+            let key = normalize(t.unwrappedDesc)
+            // Group by Merchant + Rough Amount (Round to nearest integer to handle currency fluctuate)
+            let amountKey = "\(key)_\(Int(t.amount))"
+            candidates[amountKey, default: []].append(t)
+        }
+        
         var detected: [ExpenseSubscription] = []
         
-        for (merchant, txs) in grouped {
-            if txs.count > 1 {
-                let amountCounts = Dictionary(grouping: txs, by: { $0.amount })
-                if let frequentAmount = amountCounts.max(by: { $0.value.count < $1.value.count }),
-                   frequentAmount.value.count > 1 {
-                    detected.append(ExpenseSubscription(
-                        merchant: merchant,
-                        amount: frequentAmount.key,
-                        occurences: frequentAmount.value.count
-                    ))
+        for (_, txs) in candidates {
+            // Need at least 2 occurrences
+            guard txs.count > 1 else { continue }
+            
+            // 2. Check Intervals
+            let sortedDates = txs.map { $0.unwrappedDate }.sorted()
+            var isRegular = true
+            
+            for i in 0..<(sortedDates.count - 1) {
+                let interval = sortedDates[i+1].timeIntervalSince(sortedDates[i])
+                let days = interval / 86400
+                
+                // If transactions are too close (e.g. bought 2 coffees same day), it's not a sub
+                if days < 6 {
+                    isRegular = false
+                    break
                 }
             }
+            
+            if isRegular {
+                let sample = txs.first!
+                detected.append(ExpenseSubscription(
+                    merchant: sample.unwrappedDesc, // Use original name for display
+                    amount: sample.amount,
+                    occurences: txs.count
+                ))
+            }
         }
+        
         return detected.sorted(by: { $0.amount > $1.amount })
     }
 }
