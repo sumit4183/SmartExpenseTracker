@@ -28,6 +28,11 @@ struct ContentView: View {
             .tabItem {
                 Label("History", systemImage: "list.bullet.rectangle.portrait.fill")
             }
+            
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
         }
         .tint(.blue)
     }
