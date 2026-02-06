@@ -4,6 +4,7 @@ import CoreData
 struct ContentView: View {
     let persistenceController = PersistenceController.shared
     @StateObject private var dashboardViewModel: DashboardViewModel
+    @AppStorage("hasOnboarded") private var hasOnboarded: Bool = false
     
     init() {
         let context = PersistenceController.shared.container.viewContext
@@ -11,30 +12,34 @@ struct ContentView: View {
     }
 
     var body: some View {
-        TabView {
-            DashboardView(viewModel: dashboardViewModel)
-                .tabItem {
-                    Label("Dashboard", systemImage: "house.fill")
+        if !hasOnboarded {
+            OnboardingView(isOnboarding: $hasOnboarded)
+        } else {
+            TabView {
+                DashboardView(viewModel: dashboardViewModel)
+                    .tabItem {
+                        Label("Dashboard", systemImage: "house.fill")
+                    }
+                
+                AnalyticsView(viewModel: dashboardViewModel)
+                    .tabItem {
+                        Label("Analytics", systemImage: "chart.pie.fill")
+                    }
+                
+                NavigationView {
+                    TransactionListView(context: persistenceController.container.viewContext)
                 }
-            
-            AnalyticsView(viewModel: dashboardViewModel)
                 .tabItem {
-                    Label("Analytics", systemImage: "chart.pie.fill")
+                    Label("History", systemImage: "list.bullet.rectangle.portrait.fill")
                 }
-            
-            NavigationView {
-                TransactionListView(context: persistenceController.container.viewContext)
+                
+                SettingsView()
+                    .tabItem {
+                        Label("Settings", systemImage: "gear")
+                    }
             }
-            .tabItem {
-                Label("History", systemImage: "list.bullet.rectangle.portrait.fill")
-            }
-            
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
+            .tint(.blue)
         }
-        .tint(.blue)
     }
 }
 
