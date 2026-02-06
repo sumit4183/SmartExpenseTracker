@@ -3,13 +3,7 @@ import CoreData
 import Combine
 
 class TransactionListViewModel: ObservableObject {
-    @Published var transactionSections: [String: [Transaction]] = [:]
-    @Published var sectionHeaders: [String] = []
-    @Published var searchText: String = "" {
-        didSet {
-            fetchData()
-        }
-    }
+    @Published var searchText: String = ""
     
     // Design Polish: Sorting & Filtering
     enum FilterOption: String, CaseIterable, Identifiable {
@@ -19,7 +13,7 @@ class TransactionListViewModel: ObservableObject {
         var id: String { rawValue }
     }
     
-    @Published var selectedFilter: FilterOption = .all { didSet { fetchData() } }
+    @Published var selectedFilter: FilterOption = .all
     
     enum SortOption: String, CaseIterable, Identifiable {
         case newest = "Date (New)"
@@ -29,8 +23,8 @@ class TransactionListViewModel: ObservableObject {
         var id: String { rawValue }
     }
     
-    @Published var sortOption: SortOption = .newest { didSet { fetchData() } }
-    @Published var selectedCategory: String? = nil { didSet { fetchData() } }
+    @Published var sortOption: SortOption = .newest
+    @Published var selectedCategory: String? = nil
     @Published var categories: [String] = [
         "Food & Drink", "Groceries", "Transport", "Shopping",
         "Utilities", "Entertainment", "Health", "Travel", "Rent", "Salary"
@@ -40,13 +34,11 @@ class TransactionListViewModel: ObservableObject {
     
     init(context: NSManagedObjectContext) {
         self.viewContext = context
-        fetchData()
     }
     
-    func fetchData() {
-        let request = NSFetchRequest<Transaction>(entityName: "Transaction")
-        
-        // 1. Predicates
+    // MARK: - Computed Properties for FetchRequest
+    
+    var currentPredicate: NSPredicate {
         var predicates: [NSPredicate] = []
         
         if !searchText.isEmpty {
@@ -61,75 +53,31 @@ class TransactionListViewModel: ObservableObject {
             predicates.append(NSPredicate(format: "type == %@", selectedFilter.rawValue.lowercased()))
         }
         
-        if !predicates.isEmpty {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        }
-        
-        // 2. Sorting
+        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+    }
+    
+    var currentSortDescriptors: [NSSortDescriptor] {
         switch sortOption {
         case .newest:
-            request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)]
+            return [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)]
         case .oldest:
-            request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: true)]
+            return [NSSortDescriptor(keyPath: \Transaction.date, ascending: true)]
         case .highest:
-            request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.amount, ascending: false)]
+            // Secondary sort by date to keep consistent order
+            return [
+                NSSortDescriptor(keyPath: \Transaction.amount, ascending: false),
+                NSSortDescriptor(keyPath: \Transaction.date, ascending: false)
+            ]
         case .lowest:
-            request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.amount, ascending: true)]
-        }
-        
-        do {
-            let transactions = try viewContext.fetch(request)
-            groupTransactions(transactions)
-        } catch {
-            print("Error fetching transactions: \(error)")
+             return [
+                NSSortDescriptor(keyPath: \Transaction.amount, ascending: true),
+                NSSortDescriptor(keyPath: \Transaction.date, ascending: false)
+            ]
         }
     }
     
-    private func groupTransactions(_ transactions: [Transaction]) {
-        // If sorting by Amount, don't chop into days (it makes ranking hard to see)
-        if sortOption == .highest || sortOption == .lowest {
-            self.transactionSections = ["All Transactions": transactions]
-            self.sectionHeaders = ["All Transactions"]
-            return
-        }
-        
-        // Normal Date Grouping
-        let grouped = Dictionary(grouping: transactions) { (transaction) -> String in
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            formatter.timeStyle = .none
-            
-            if Calendar.current.isDateInToday(transaction.unwrappedDate) {
-                return "Today"
-            } else if Calendar.current.isDateInYesterday(transaction.unwrappedDate) {
-                return "Yesterday"
-            } else {
-                return formatter.string(from: transaction.unwrappedDate)
-            }
-        }
-        
-        self.transactionSections = grouped
-        // Sort headers based on Date option
-        self.sectionHeaders = grouped.keys.sorted { (dateStr1, dateStr2) -> Bool in
-            let t1 = grouped[dateStr1]?.first?.unwrappedDate ?? Date()
-            let t2 = grouped[dateStr2]?.first?.unwrappedDate ?? Date()
-            return sortOption == .oldest ? t1 < t2 : t1 > t2
-        }
-    }
-    
-    func deleteTransaction(at offsets: IndexSet, in section: String) {
-        guard let transactions = transactionSections[section] else { return }
-        
-        for index in offsets {
-            let transaction = transactions[index]
-            viewContext.delete(transaction)
-        }
-        
-        do {
-            try viewContext.save()
-            fetchData() // Refresh list
-        } catch {
-            print("Error deleting: \(error)")
-        }
+    func deleteTransaction(_ transaction: Transaction) {
+        viewContext.delete(transaction)
+        try? viewContext.save()
     }
 }

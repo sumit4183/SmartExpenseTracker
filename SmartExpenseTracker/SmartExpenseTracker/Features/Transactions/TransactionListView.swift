@@ -50,16 +50,15 @@ struct TransactionListView: View {
                 .padding(.vertical, 12)
             }
             
-            // 2. Sort & Order Toolbar (Reference Design)
+            // 2. Sort & Order Toolbar
             HStack {
                 Text("Sort by")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                // Sort Type: Date vs Amount
+                // Sort Type
                 HStack(spacing: 0) {
                     Button {
-                        // Switch to Date (preserve order)
                         viewModel.sortOption = (viewModel.sortOption == .lowest || viewModel.sortOption == .oldest) ? .oldest : .newest
                     } label: {
                         Image(systemName: "calendar")
@@ -71,7 +70,6 @@ struct TransactionListView: View {
                     }
                     
                     Button {
-                        // Switch to Amount (preserve order)
                         viewModel.sortOption = (viewModel.sortOption == .lowest || viewModel.sortOption == .oldest) ? .lowest : .highest
                     } label: {
                         Image(systemName: "dollarsign.circle")
@@ -92,12 +90,11 @@ struct TransactionListView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 
-                // Order: Asc vs Desc
+                // Order Direction
                 HStack(spacing: 0) {
                     Button {
-                        // Switch to Ascending (Oldest / Lowest)
-                        if viewModel.sortOption == .newest { viewModel.sortOption = .oldest }
-                        if viewModel.sortOption == .highest { viewModel.sortOption = .lowest }
+                         if viewModel.sortOption == .newest { viewModel.sortOption = .oldest }
+                         if viewModel.sortOption == .highest { viewModel.sortOption = .lowest }
                     } label: {
                         Image(systemName: "arrow.up")
                             .font(.caption)
@@ -108,7 +105,6 @@ struct TransactionListView: View {
                     }
                     
                     Button {
-                        // Switch to Descending (Newest / Highest)
                         if viewModel.sortOption == .oldest { viewModel.sortOption = .newest }
                         if viewModel.sortOption == .lowest { viewModel.sortOption = .highest }
                     } label: {
@@ -128,47 +124,79 @@ struct TransactionListView: View {
             .padding(.bottom, 8)
             .background(Color(.systemBackground))
             
-            // The List
-            List {
-                ForEach(viewModel.sectionHeaders, id: \.self) { sectionDate in
-                    Section(header: Text(sectionDate)) {
-                        ForEach(viewModel.transactionSections[sectionDate] ?? []) { transaction in
-                            HStack {
-                                Image(systemName: transaction.categoryIcon)
-                                    .foregroundColor(.white)
-                                    .frame(width: 32, height: 32)
-                                    .background(transaction.categoryColor, in: Circle())
-                                
-                                VStack(alignment: .leading) {
-                                    Text(transaction.unwrappedDesc)
-                                        .fontWeight(.medium)
-                                    Text(transaction.unwrappedCategory)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                
-                                Spacer()
-                                
-                                Text(transaction.formattedAmount)
-                                    .fontWeight(transaction.typeEnum == .income ? .bold : .regular)
-                                    .foregroundStyle(transaction.typeEnum == .income ? Color.green : Color.primary)
-                            }
-                        }
-                        .onDelete { offsets in
-                            viewModel.deleteTransaction(at: offsets, in: sectionDate)
-                        }
-                    }
-                }
-            }
-            .listStyle(.insetGrouped)
+            // 3. Lazy List Content
+            TransactionListContent(
+                predicate: viewModel.currentPredicate,
+                sortDescriptors: viewModel.currentSortDescriptors,
+                onDelete: viewModel.deleteTransaction
+            )
         }
         .searchable(text: $viewModel.searchText)
         .navigationTitle("History")
     }
 }
 
-#Preview {
-    NavigationView {
-        TransactionListView(context: PersistenceController.preview.container.viewContext)
+// Subview allowing FetchRequest to update when init params change
+struct TransactionListContent: View {
+    @SectionedFetchRequest<String, Transaction> private var sections: SectionedFetchResults<String, Transaction>
+    var onDelete: (Transaction) -> Void
+    
+    init(predicate: NSPredicate, sortDescriptors: [NSSortDescriptor], onDelete: @escaping (Transaction) -> Void) {
+        self.onDelete = onDelete
+        _sections = SectionedFetchRequest(
+            entity: Transaction.entity(),
+            sectionIdentifier: \.sectionIdentifier,
+            sortDescriptors: sortDescriptors,
+            predicate: predicate,
+            animation: .default
+        )
+    }
+    
+    var body: some View {
+        List {
+            ForEach(sections) { section in
+                Section(header: Text(formatHeader(section.id))) {
+                    ForEach(section) { transaction in
+                        HStack {
+                            Image(systemName: transaction.categoryIcon)
+                                .foregroundColor(.white)
+                                .frame(width: 32, height: 32)
+                                .background(transaction.categoryColor, in: Circle())
+                            
+                            VStack(alignment: .leading) {
+                                Text(transaction.unwrappedDesc)
+                                    .fontWeight(.medium)
+                                Text(transaction.unwrappedCategory)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Text(transaction.formattedAmount)
+                                .fontWeight(transaction.typeEnum == .income ? .bold : .regular)
+                                .foregroundStyle(transaction.typeEnum == .income ? Color.green : Color.primary)
+                        }
+                    }
+                    .onDelete { offsets in
+                        offsets.map { section[$0] }.forEach(onDelete)
+                    }
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
+    }
+    
+    func formatHeader(_ id: String) -> String {
+        // "2023-10-27" -> "Today" or "Oct 27, 2023"
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        guard let date = formatter.date(from: id) else { return id }
+        
+        if Calendar.current.isDateInToday(date) { return "Today" }
+        if Calendar.current.isDateInYesterday(date) { return "Yesterday" }
+        
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
 }

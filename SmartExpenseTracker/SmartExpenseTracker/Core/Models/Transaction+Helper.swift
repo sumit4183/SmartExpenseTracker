@@ -41,6 +41,12 @@ extension Transaction {
         date ?? Date()
     }
     
+    @objc public var sectionIdentifier: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: unwrappedDate)
+    }
+    
     public var formattedAmount: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
