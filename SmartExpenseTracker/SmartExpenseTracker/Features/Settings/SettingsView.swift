@@ -3,7 +3,9 @@ import CoreData
 
 struct SettingsView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @AppStorage("hasOnboarded") private var hasOnboarded: Bool = true
     @State private var csvFile: URL? = nil
+    @State private var showResetAlert = false
     
     var body: some View {
         NavigationView {
@@ -27,6 +29,14 @@ struct SettingsView: View {
                     }
                 }
                 
+                Section(header: Text("Danger Zone")) {
+                    Button(role: .destructive) {
+                        showResetAlert = true
+                    } label: {
+                        Text("Reset App Data")
+                    }
+                }
+                
                 Section(header: Text("About")) {
                     HStack {
                         Text("Version")
@@ -40,7 +50,31 @@ struct SettingsView: View {
             .onAppear {
                 exportCSV()
             }
+            .alert("Reset Everything?", isPresented: $showResetAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Reset", role: .destructive) {
+                    resetApp()
+                }
+            } message: {
+                Text("This will delete all transactions and reset your budget. You cannot undo this.")
+            }
         }
+    }
+    
+    private func resetApp() {
+        // 1. Wipe Core Data
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Transaction.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        
+        do {
+            try viewContext.execute(deleteRequest)
+            try viewContext.save()
+        } catch {
+            print("Error resetting data: \(error)")
+        }
+        
+        // 2. Reset Onboarding
+        hasOnboarded = false
     }
     
     private func exportCSV() {

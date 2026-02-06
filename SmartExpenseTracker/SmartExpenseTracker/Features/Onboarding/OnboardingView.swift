@@ -74,6 +74,10 @@ struct OnboardingView: View {
                 .padding(.horizontal)
                 
                 Button {
+                    if let value = Double(budgetInput) {
+                        monthlyBudget = value
+                    }
+                    
                     withAnimation {
                         isOnboarding = true
                     }

@@ -4,6 +4,7 @@ import CoreData
 struct DashboardView: View {
     @ObservedObject var viewModel: DashboardViewModel
     @StateObject private var insightsViewModel = InsightsViewModel()
+    @AppStorage("monthlyBudget") private var monthlyBudget: Double = 2000
     @State private var showContent = false
     @State private var showAddSheet = false
     
@@ -122,7 +123,7 @@ struct DashboardView: View {
                     }
                     
                     // MARK: - Monthly Budget (Power Feature)
-                    BudgetView(totalSpend: viewModel.currentMonthSpend, budget: $viewModel.monthlyBudget)
+                    BudgetView(totalSpend: viewModel.currentMonthSpend, budget: $monthlyBudget)
                         .padding(.horizontal)
                         .opacity(showContent ? 1 : 0)
                         .offset(y: showContent ? 0 : 20)

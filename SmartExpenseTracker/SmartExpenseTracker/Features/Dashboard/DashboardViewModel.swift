@@ -50,13 +50,6 @@ class DashboardViewModel: ObservableObject {
     @Published var forecastConfidence: Double = 0.0 // 0.0 to 1.0
     @Published var forecastReason: String = "Gathering data..."
     
-    // Budgeting (Power Feature)
-    @Published var monthlyBudget: Double {
-        didSet {
-            UserDefaults.standard.set(monthlyBudget, forKey: "monthlyBudget")
-        }
-    }
-    
     // Models
     // private var categorizer: ExpenseCategorizer?
     // removed: private var forecaster: ExpenseForecaster?
@@ -69,8 +62,6 @@ class DashboardViewModel: ObservableObject {
     
     init(context: NSManagedObjectContext) {
         self.viewContext = context
-        self.monthlyBudget = UserDefaults.standard.double(forKey: "monthlyBudget")
-        if self.monthlyBudget == 0 { self.monthlyBudget = 2000.0 } // Default
         fetchData()
     }
     
