@@ -4,10 +4,6 @@
 
 Smart Expense Tracker is a native iOS experience designed to understand your spending habits without your data ever leaving your device. It combines fluid SwiftUI interactions with On-Device Machine Learning to provide a financial assistant that is silent, smart, and secure.
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/placeholder-dashboard.png" alt="App Dashboard" width="300">
-</p>
-
 ## The Philosophy
 
 Most finance apps are calculators. We built a companion.
@@ -43,8 +39,18 @@ Numbers tell only half the story. The Insight Layer translates data into natural
 *   **Pattern**: MVVM (Model-View-ViewModel).
 *   **Machine Learning**:
     *   **Training**: Python (`scripts/generate_data.py`) & Create ML.
-    *   **Inference**: Core ML Framework.
-    
+    *   **Inference**: Core ML Framework (Custom Text Classifier & Regressor).
+
+---
+
+## 🌟 V1.0 Feature Set
+
+*   **Smart Entry**: Auto-categorization as you type.
+*   **Deep Insights**: "Calm Computing" narratives about your spending.
+*   **Safety Net**: Anomaly detection for unusual spending.
+*   **Full Control**: Swipe-to-Edit and Swipe-to-Delete transactions.
+*   **Privacy**: 100% On-Device. No account required.
+
 ---
 
 ## Technical Highlights
@@ -52,7 +58,36 @@ Numbers tell only half the story. The Insight Layer translates data into natural
 This project demonstrates a production-grade iOS architecture suitable for 2026.
 
 *   **SwiftUI**: 100% declarative UI with fluid transitions and haptic feedback.
-*   **Core Data**: Robust local persistence layer.
+*   **Core Data**: Robust local persistence layer (Batched Fetching, Background Context).
 *   **Combine**: Reactive data bindings for real-time model updates.
 *   **MVVM**: Clean separation of Logic (ViewModels) and Presentation (Views).
+*   **Modular Codebase**: Organized into `Core`, `Features`, and `App` layers.
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+*   Xcode 15.0+
+*   iOS 17.0+
+*   Swift 5.9+
+
+### Installation
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/yourusername/SmartExpenseTracker.git
+    ```
+2.  Open `SmartExpenseTracker.xcodeproj` in Xcode.
+3.  Select your target simulator (e.g., iPhone 15 Pro).
+4.  Press **Cmd + R** to build and run.
+
+*Note: The Core ML models are pre-compiled and included in the repository, so no additional setup is required.*
+
+---
+
+## 👤 Author
+
+**Sumit Patel**
+*   [LinkedIn](https://linkedin.com/in/sumit4183)
+*   [GitHub](https://github.com/sumit4183)
+*   [Portfolio](https://sumitp.netlify.app)
 
