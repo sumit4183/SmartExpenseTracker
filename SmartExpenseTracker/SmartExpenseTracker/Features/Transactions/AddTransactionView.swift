@@ -4,9 +4,11 @@ import CoreData
 struct AddTransactionView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject private var viewModel: AddTransactionViewModel
+    private var isEditing: Bool
     
-    init(context: NSManagedObjectContext) {
-        _viewModel = StateObject(wrappedValue: AddTransactionViewModel(context: context))
+    init(context: NSManagedObjectContext, transactionToEdit: Transaction? = nil) {
+        _viewModel = StateObject(wrappedValue: AddTransactionViewModel(context: context, transaction: transactionToEdit))
+        self.isEditing = (transactionToEdit != nil)
     }
     
     var body: some View {
@@ -44,14 +46,14 @@ struct AddTransactionView: View {
                 } header: {
                     Text("Details")
                 } footer: {
-                    if !viewModel.description.isEmpty {
+                    if !viewModel.description.isEmpty && !isEditing {
                         Text("Category automatically suggested by AI")
                             .font(.caption2)
                             .foregroundStyle(.blue)
                     }
                 }
             }
-            .navigationTitle("New Transaction")
+            .navigationTitle(isEditing ? "Edit Transaction" : "New Transaction")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

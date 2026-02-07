@@ -32,9 +32,11 @@ class AddTransactionViewModel: ObservableObject {
     
     private let viewContext: NSManagedObjectContext
     private var categorizer: ExpenseCategorizer?
+    private var editingTransaction: Transaction?
     
-    init(context: NSManagedObjectContext) {
+    init(context: NSManagedObjectContext, transaction: Transaction? = nil) {
         self.viewContext = context
+        self.editingTransaction = transaction
         
         // Load the ML Model
         do {
@@ -43,12 +45,24 @@ class AddTransactionViewModel: ObservableObject {
         } catch {
             print("Failed to load ML Model: \(error)")
         }
+        
+        // Populate if editing
+        if let t = transaction {
+            self.amount = String(format: "%.2f", t.amount) // Format nicely
+            self.type = t.typeEnum
+            self.description = t.unwrappedDesc
+            self.selectedCategory = t.unwrappedCategory
+        }
     }
     
     // MARK: - ML Inference
     private func predictCategory() {
         // AI Logic: Only predict for Expenses. Income is simple.
         guard type == .expense else { return }
+        
+        // Skip prediction if editing and description hasn't changed majorly (simplified: just skip for now to avoid overwriting user edits)
+        // Better: Only predict if description is CHANGING. 
+        // Current implementation calls this via didSet, so it handles changes.
         
         guard !description.isEmpty, let model = categorizer else { return }
         
@@ -80,23 +94,28 @@ class AddTransactionViewModel: ObservableObject {
         guard let amountDouble = Double(amount) else { return false }
         
         // 1. Anomaly Check (Guardian)
-        // Only run if we haven't already confirmed it
-        if !isAnomalyConfirmed {
+        // Skip anomalies for edits to avoid annoyance
+        if editingTransaction == nil && !isAnomalyConfirmed {
             if checkForAnomaly(amount: amountDouble, category: selectedCategory) {
                 return false // Stop save, trigger UI alert
             }
         }
         
         // 2. Save
-        let newTransaction = Transaction(context: viewContext)
-        newTransaction.id = UUID()
-        newTransaction.date = Date()
-        newTransaction.amount = amountDouble
-        newTransaction.desc = description
-        newTransaction.category = selectedCategory
-        newTransaction.typeEnum = type
-        // Mark it as an anomaly if we forced it through
-        newTransaction.isAnomaly = isAnomalyConfirmed 
+        let transaction: Transaction
+        if let existing = editingTransaction {
+            transaction = existing
+        } else {
+            transaction = Transaction(context: viewContext)
+            transaction.id = UUID()
+            transaction.date = Date()
+            transaction.isAnomaly = isAnomalyConfirmed
+        }
+        
+        transaction.amount = amountDouble
+        transaction.desc = description
+        transaction.category = selectedCategory
+        transaction.typeEnum = type
         
         do {
             try viewContext.save()

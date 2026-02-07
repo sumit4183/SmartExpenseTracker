@@ -30,7 +30,7 @@ class TransactionListViewModel: ObservableObject {
         "Utilities", "Entertainment", "Health", "Travel", "Rent", "Salary"
     ] 
     
-    private let viewContext: NSManagedObjectContext
+    let viewContext: NSManagedObjectContext
     
     init(context: NSManagedObjectContext) {
         self.viewContext = context
