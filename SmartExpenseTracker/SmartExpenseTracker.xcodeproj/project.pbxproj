@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		76E1AAF22F4D5D7B0086ED39 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76E1AAF12F4D5D7B0086ED39 /* WidgetKit.framework */; };
+		76E1AAF42F4D5D7B0086ED39 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76E1AAF32F4D5D7B0086ED39 /* SwiftUI.framework */; };
+		76E1AB032F4D5D7D0086ED39 /* SmartExpenseWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 76E1AAEF2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		76D642A12F29C46600752827 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,13 +27,48 @@
 			remoteGlobalIDString = 76D6428D2F29C46400752827;
 			remoteInfo = SmartExpenseTracker;
 		};
+		76E1AB012F4D5D7D0086ED39 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 76D642862F29C46400752827 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 76E1AAEE2F4D5D7B0086ED39;
+			remoteInfo = SmartExpenseWidgetsExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		76E1AB082F4D5D7D0086ED39 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				76E1AB032F4D5D7D0086ED39 /* SmartExpenseWidgetsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		76D6428E2F29C46400752827 /* SmartExpenseTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SmartExpenseTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76D642A02F29C46600752827 /* SmartExpenseTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmartExpenseTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		76D642AA2F29C46600752827 /* SmartExpenseTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmartExpenseTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		76E1AAEF2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SmartExpenseWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		76E1AAF12F4D5D7B0086ED39 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		76E1AAF32F4D5D7B0086ED39 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		76E1AB092F4D5DC10086ED39 /* SmartExpenseWidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SmartExpenseWidgetsExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		76E1AB042F4D5D7D0086ED39 /* Exceptions for "SmartExpenseWidgets" folder in "SmartExpenseWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 76E1AAEE2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		76D642902F29C46400752827 /* SmartExpenseTracker */ = {
@@ -43,6 +84,14 @@
 		76D642AD2F29C46600752827 /* SmartExpenseTrackerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SmartExpenseTrackerUITests;
+			sourceTree = "<group>";
+		};
+		76E1AAF52F4D5D7B0086ED39 /* SmartExpenseWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				76E1AB042F4D5D7D0086ED39 /* Exceptions for "SmartExpenseWidgets" folder in "SmartExpenseWidgetsExtension" target */,
+			);
+			path = SmartExpenseWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,15 +118,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		76E1AAEC2F4D5D7B0086ED39 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76E1AAF42F4D5D7B0086ED39 /* SwiftUI.framework in Frameworks */,
+				76E1AAF22F4D5D7B0086ED39 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		76D642852F29C46400752827 = {
 			isa = PBXGroup;
 			children = (
+				76E1AB092F4D5DC10086ED39 /* SmartExpenseWidgetsExtension.entitlements */,
 				76D642902F29C46400752827 /* SmartExpenseTracker */,
 				76D642A32F29C46600752827 /* SmartExpenseTrackerTests */,
 				76D642AD2F29C46600752827 /* SmartExpenseTrackerUITests */,
+				76E1AAF52F4D5D7B0086ED39 /* SmartExpenseWidgets */,
+				76E1AAF02F4D5D7B0086ED39 /* Frameworks */,
 				76D6428F2F29C46400752827 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,8 +149,18 @@
 				76D6428E2F29C46400752827 /* SmartExpenseTracker.app */,
 				76D642A02F29C46600752827 /* SmartExpenseTrackerTests.xctest */,
 				76D642AA2F29C46600752827 /* SmartExpenseTrackerUITests.xctest */,
+				76E1AAEF2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		76E1AAF02F4D5D7B0086ED39 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				76E1AAF12F4D5D7B0086ED39 /* WidgetKit.framework */,
+				76E1AAF32F4D5D7B0086ED39 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,10 +173,12 @@
 				76D6428A2F29C46400752827 /* Sources */,
 				76D6428B2F29C46400752827 /* Frameworks */,
 				76D6428C2F29C46400752827 /* Resources */,
+				76E1AB082F4D5D7D0086ED39 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				76E1AB022F4D5D7D0086ED39 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				76D642902F29C46400752827 /* SmartExpenseTracker */,
@@ -163,6 +236,28 @@
 			productReference = 76D642AA2F29C46600752827 /* SmartExpenseTrackerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		76E1AAEE2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 76E1AB052F4D5D7D0086ED39 /* Build configuration list for PBXNativeTarget "SmartExpenseWidgetsExtension" */;
+			buildPhases = (
+				76E1AAEB2F4D5D7B0086ED39 /* Sources */,
+				76E1AAEC2F4D5D7B0086ED39 /* Frameworks */,
+				76E1AAED2F4D5D7B0086ED39 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				76E1AAF52F4D5D7B0086ED39 /* SmartExpenseWidgets */,
+			);
+			name = SmartExpenseWidgetsExtension;
+			packageProductDependencies = (
+			);
+			productName = SmartExpenseWidgetsExtension;
+			productReference = 76E1AAEF2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +279,9 @@
 						CreatedOnToolsVersion = 26.2;
 						TestTargetID = 76D6428D2F29C46400752827;
 					};
+					76E1AAEE2F4D5D7B0086ED39 = {
+						CreatedOnToolsVersion = 26.2;
+					};
 				};
 			};
 			buildConfigurationList = 76D642892F29C46400752827 /* Build configuration list for PBXProject "SmartExpenseTracker" */;
@@ -203,6 +301,7 @@
 				76D6428D2F29C46400752827 /* SmartExpenseTracker */,
 				76D6429F2F29C46600752827 /* SmartExpenseTrackerTests */,
 				76D642A92F29C46600752827 /* SmartExpenseTrackerUITests */,
+				76E1AAEE2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +322,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		76D642A82F29C46600752827 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76E1AAED2F4D5D7B0086ED39 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +359,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		76E1AAEB2F4D5D7B0086ED39 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +378,11 @@
 			isa = PBXTargetDependency;
 			target = 76D6428D2F29C46400752827 /* SmartExpenseTracker */;
 			targetProxy = 76D642AB2F29C46600752827 /* PBXContainerItemProxy */;
+		};
+		76E1AB022F4D5D7D0086ED39 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 76E1AAEE2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension */;
+			targetProxy = 76E1AB012F4D5D7D0086ED39 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -534,6 +652,68 @@
 			};
 			name = Release;
 		};
+		76E1AB062F4D5D7D0086ED39 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SmartExpenseWidgetsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 685SA324NK;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SmartExpenseWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SmartExpenseWidgets;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Sumit.SmartExpenseTracker.SmartExpenseWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		76E1AB072F4D5D7D0086ED39 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SmartExpenseWidgetsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 685SA324NK;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SmartExpenseWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SmartExpenseWidgets;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Sumit.SmartExpenseTracker.SmartExpenseWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -569,6 +749,15 @@
 			buildConfigurations = (
 				76D642BB2F29C46600752827 /* Debug */,
 				76D642BC2F29C46600752827 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		76E1AB052F4D5D7D0086ED39 /* Build configuration list for PBXNativeTarget "SmartExpenseWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76E1AB062F4D5D7D0086ED39 /* Debug */,
+				76E1AB072F4D5D7D0086ED39 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
