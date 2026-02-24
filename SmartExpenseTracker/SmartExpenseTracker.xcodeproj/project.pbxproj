@@ -68,11 +68,23 @@
 			);
 			target = 76E1AAEE2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension */;
 		};
+		76E1AB0B2F4D6BB10086ED39 /* Exceptions for "SmartExpenseTracker" folder in "SmartExpenseWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Core/Data/Persistence.swift,
+				"Core/Models/Transaction+Helper.swift",
+				Resources/SmartExpenseTracker.xcdatamodeld,
+			);
+			target = 76E1AAEE2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		76D642902F29C46400752827 /* SmartExpenseTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				76E1AB0B2F4D6BB10086ED39 /* Exceptions for "SmartExpenseTracker" folder in "SmartExpenseWidgetsExtension" target */,
+			);
 			path = SmartExpenseTracker;
 			sourceTree = "<group>";
 		};

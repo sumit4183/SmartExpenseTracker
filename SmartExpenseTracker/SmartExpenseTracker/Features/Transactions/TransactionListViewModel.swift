@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 import Combine
+import WidgetKit
 
 class TransactionListViewModel: ObservableObject {
     @Published var searchText: String = ""
@@ -79,5 +80,6 @@ class TransactionListViewModel: ObservableObject {
     func deleteTransaction(_ transaction: Transaction) {
         viewContext.delete(transaction)
         try? viewContext.save()
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

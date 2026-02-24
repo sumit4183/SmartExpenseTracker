@@ -2,6 +2,7 @@ import SwiftUI
 import CoreData
 import CoreML
 import Combine
+import WidgetKit
 
 class AddTransactionViewModel: ObservableObject {
     @Published var amount: String = ""
@@ -119,6 +120,7 @@ class AddTransactionViewModel: ObservableObject {
         
         do {
             try viewContext.save()
+            WidgetCenter.shared.reloadAllTimelines()
             return true
         } catch {
             print("Failed to save transaction: \(error)")
