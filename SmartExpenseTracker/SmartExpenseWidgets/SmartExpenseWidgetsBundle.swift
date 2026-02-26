@@ -12,7 +12,5 @@ import SwiftUI
 struct SmartExpenseWidgetsBundle: WidgetBundle {
     var body: some Widget {
         SmartExpenseWidgets()
-        SmartExpenseWidgetsControl()
-        SmartExpenseWidgetsLiveActivity()
     }
 }

@@ -53,37 +53,131 @@ struct Provider: TimelineProvider {
 
 struct SmartExpenseWidgetsEntryView : View {
     var entry: Provider.Entry
+    @Environment(\.widgetFamily) var family
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Net Balance")
-                .font(.caption)
-                .foregroundColor(.secondary)
+        switch family {
+        case .systemSmall:
+            SmallWidgetView(entry: entry)
+        case .systemMedium:
+            MediumWidgetView(entry: entry)
+        case .accessoryRectangular:
+            LockScreenWidgetView(entry: entry)
+        default:
+            SmallWidgetView(entry: entry)
+        }
+    }
+}
+
+// MARK: - Small Widget (Net Balance)
+struct SmallWidgetView: View {
+    var entry: Provider.Entry
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "dollarsign.circle.fill")
+                    .foregroundStyle(.blue)
+                Text("Balance")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
             Text(entry.netBalance, format: .currency(code: "USD"))
-                .font(.headline)
+                .font(.title2)
                 .bold()
-                .padding(.bottom, 2)
+                .minimumScaleFactor(0.8)
+                .foregroundStyle(entry.netBalance >= 0 ? Color.primary : Color.red)
+            
+            Spacer()
+            
+            if let latest = entry.recentTransactions.first {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Latest")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    HStack {
+                        Image(systemName: latest.categoryIcon)
+                            .foregroundStyle(latest.categoryColor)
+                            .font(.caption2)
+                        Text(latest.unwrappedDesc)
+                            .font(.caption2)
+                            .lineLimit(1)
+                    }
+                }
+            } else {
+                Text("No recent spending")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+// MARK: - Medium Widget (Recent List)
+struct MediumWidgetView: View {
+    var entry: Provider.Entry
+    
+    var body: some View {
+        HStack {
+            // Left Side: Balance
+            VStack(alignment: .leading) {
+                Text("Net Balance")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text(entry.netBalance, format: .currency(code: "USD"))
+                    .font(.title2)
+                    .bold()
+                    .foregroundStyle(entry.netBalance >= 0 ? Color.primary : Color.red)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             Divider()
             
-            if entry.recentTransactions.isEmpty {
-                Text("No data")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            } else {
-                ForEach(entry.recentTransactions.prefix(2), id: \.id) { transaction in
-                    HStack {
-                        Image(systemName: transaction.categoryIcon)
-                            .foregroundColor(transaction.categoryColor)
-                        Text(transaction.unwrappedDesc)
-                            .font(.caption)
-                            .lineLimit(1)
-                        Spacer()
-                        Text(transaction.amount, format: .currency(code: "USD"))
-                            .font(.caption)
-                            .bold()
+            // Right Side: Recent Transactions
+            VStack(alignment: .leading, spacing: 8) {
+                if entry.recentTransactions.isEmpty {
+                    Text("No recent transactions")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } else {
+                    ForEach(entry.recentTransactions.prefix(3), id: \.id) { transaction in
+                        HStack {
+                            Image(systemName: transaction.categoryIcon)
+                                .foregroundColor(transaction.categoryColor)
+                                .font(.caption2)
+                            Text(transaction.unwrappedDesc)
+                                .font(.caption)
+                                .lineLimit(1)
+                            Spacer()
+                            Text(transaction.amount, format: .currency(code: "USD"))
+                                .font(.caption)
+                                .bold()
+                        }
                     }
                 }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 8)
+        }
+    }
+}
+
+// MARK: - Lock Screen Widget (Accessory Rectangular)
+struct LockScreenWidgetView: View {
+    var entry: Provider.Entry
+    
+    var body: some View {
+        HStack(alignment: .center) {
+            Image(systemName: "chart.pie.fill")
+                .font(.title3)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Net Balance")
+                    .font(.caption2)
+                Text(entry.netBalance, format: .currency(code: "USD"))
+                    .font(.subheadline)
+                    .bold()
             }
         }
     }
@@ -105,6 +199,6 @@ struct SmartExpenseWidgets: Widget {
         }
         .configurationDisplayName("Smart Expense")
         .description("Track your recent spending and balance.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
     }
 }
