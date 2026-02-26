@@ -87,4 +87,38 @@ extension Transaction {
         default: return "questionmark.circle"
         }
     }
+    
+    // MARK: - Static Category Helpers
+    
+    static func color(for category: String) -> Color {
+        switch category {
+        case "Food & Drink": return .orange
+        case "Groceries": return .green
+        case "Transport": return .blue
+        case "Shopping": return .purple
+        case "Utilities": return .yellow
+        case "Entertainment": return .pink
+        case "Travel": return .indigo
+        case "Health": return .red
+        case "Rent": return .brown
+        case "Salary": return .mint
+        default: return .gray
+        }
+    }
+    
+    static func icon(for category: String) -> String {
+        switch category {
+        case "Food & Drink": return "fork.knife"
+        case "Groceries": return "carrot.fill"
+        case "Transport": return "car.fill"
+        case "Shopping": return "bag.fill"
+        case "Utilities": return "bolt.fill"
+        case "Entertainment": return "popcorn.fill"
+        case "Travel": return "airplane"
+        case "Health": return "heart.text.square.fill"
+        case "Rent": return "house.fill"
+        case "Salary": return "dollarsign.circle.fill"
+        default: return "questionmark.circle"
+        }
+    }
 }

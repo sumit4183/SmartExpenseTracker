@@ -73,6 +73,7 @@
 			membershipExceptions = (
 				Core/Data/Persistence.swift,
 				"Core/Models/Transaction+Helper.swift",
+				Features/Intents/QuickLogIntent.swift,
 				Resources/SmartExpenseTracker.xcdatamodeld,
 			);
 			target = 76E1AAEE2F4D5D7B0086ED39 /* SmartExpenseWidgetsExtension */;

@@ -1,11 +1,24 @@
 import SwiftUI
 import CoreData
+import WidgetKit
 
 struct SettingsView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @AppStorage("hasOnboarded") private var hasOnboarded: Bool = true
     @State private var csvFile: URL? = nil
     @State private var showResetAlert = false
+    
+    // Widget Customization (Shared App Group)
+    private let appGroupStore = UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")
+    
+    @AppStorage("widgetShortcut1Amount", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut1Amount: Double = 5.0
+    @AppStorage("widgetShortcut1Merchant", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut1Merchant: String = "Coffee"
+    @AppStorage("widgetShortcut1Category", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut1Category: String = "Food & Drink"
+    
+    @AppStorage("widgetShortcut2Amount", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut2Amount: Double = 20.0
+    @AppStorage("widgetShortcut2Merchant", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut2Merchant: String = "Transport"
+    @AppStorage("widgetShortcut2Category", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut2Category: String = "Transport"
+    
     
     var body: some View {
         NavigationView {
@@ -27,6 +40,48 @@ struct SettingsView: View {
                                 .font(.caption)
                         }
                     }
+                }
+                
+                Section(header: Text("Widget Shortcuts (iOS 17+)")) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Shortcut 1 (Blue Button)")
+                            .font(.headline)
+                        HStack {
+                            TextField("Merchant", text: $shortcut1Merchant)
+                                .textFieldStyle(.roundedBorder)
+                            TextField("Amount", value: $shortcut1Amount, format: .currency(code: "USD"))
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 80)
+                        }
+                        Picker("Category", selection: $shortcut1Category) {
+                            ForEach(["Food & Drink", "Groceries", "Transport", "Shopping", "Entertainment", "Health", "Bills", "Other"], id: \.self) {
+                                Text($0)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                    .padding(.vertical, 4)
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Shortcut 2 (Green Button)")
+                            .font(.headline)
+                        HStack {
+                            TextField("Merchant", text: $shortcut2Merchant)
+                                .textFieldStyle(.roundedBorder)
+                            TextField("Amount", value: $shortcut2Amount, format: .currency(code: "USD"))
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(.roundedBorder)
+                                .frame(width: 80)
+                        }
+                        Picker("Category", selection: $shortcut2Category) {
+                            ForEach(["Food & Drink", "Groceries", "Transport", "Shopping", "Entertainment", "Health", "Bills", "Other"], id: \.self) {
+                                Text($0)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                    .padding(.vertical, 4)
                 }
                 
                 Section(header: Text("Danger Zone")) {
@@ -58,6 +113,12 @@ struct SettingsView: View {
             } message: {
                 Text("This will delete all transactions and reset your budget. You cannot undo this.")
             }
+            .onChange(of: shortcut1Amount) { WidgetCenter.shared.reloadAllTimelines() }
+            .onChange(of: shortcut1Merchant) { WidgetCenter.shared.reloadAllTimelines() }
+            .onChange(of: shortcut1Category) { WidgetCenter.shared.reloadAllTimelines() }
+            .onChange(of: shortcut2Amount) { WidgetCenter.shared.reloadAllTimelines() }
+            .onChange(of: shortcut2Merchant) { WidgetCenter.shared.reloadAllTimelines() }
+            .onChange(of: shortcut2Category) { WidgetCenter.shared.reloadAllTimelines() }
         }
     }
     

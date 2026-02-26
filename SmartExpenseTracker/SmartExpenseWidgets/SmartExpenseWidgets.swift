@@ -1,6 +1,7 @@
 import WidgetKit
 import SwiftUI
 import CoreData
+import AppIntents
 
 struct SmartExpenseEntry: TimelineEntry {
     let date: Date
@@ -118,6 +119,14 @@ struct SmallWidgetView: View {
 struct MediumWidgetView: View {
     var entry: Provider.Entry
     
+    @AppStorage("widgetShortcut1Amount", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut1Amount: Double = 5.0
+    @AppStorage("widgetShortcut1Merchant", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut1Merchant: String = "Coffee"
+    @AppStorage("widgetShortcut1Category", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut1Category: String = "Food & Drink"
+    
+    @AppStorage("widgetShortcut2Amount", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut2Amount: Double = 20.0
+    @AppStorage("widgetShortcut2Merchant", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut2Merchant: String = "Transport"
+    @AppStorage("widgetShortcut2Category", store: UserDefaults(suiteName: "group.com.sumit4183.SmartExpenseTracker")) private var shortcut2Category: String = "Transport"
+    
     var body: some View {
         HStack {
             // Left Side: Balance
@@ -135,14 +144,14 @@ struct MediumWidgetView: View {
             
             Divider()
             
-            // Right Side: Recent Transactions
+            // Right Side: Recent Transactions & Quick Log
             VStack(alignment: .leading, spacing: 8) {
                 if entry.recentTransactions.isEmpty {
                     Text("No recent transactions")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } else {
-                    ForEach(entry.recentTransactions.prefix(3), id: \.id) { transaction in
+                    ForEach(entry.recentTransactions.prefix(2), id: \.id) { transaction in
                         HStack {
                             Image(systemName: transaction.categoryIcon)
                                 .foregroundColor(transaction.categoryColor)
@@ -155,6 +164,39 @@ struct MediumWidgetView: View {
                                 .font(.caption)
                                 .bold()
                         }
+                    }
+                }
+                
+                Spacer()
+                
+                // Interactive Quick Log Buttons (iOS 17+)
+                if #available(iOS 17.0, *) {
+                    HStack {
+                        Button(intent: QuickLogIntent(amount: shortcut1Amount, merchant: shortcut1Merchant, category: shortcut1Category)) {
+                            HStack {
+                                Image(systemName: Transaction.icon(for: shortcut1Category))
+                                Text("+\(shortcut1Amount, format: .currency(code: "USD"))")
+                            }
+                            .font(.caption2)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Transaction.color(for: shortcut1Category).opacity(0.1), in: Capsule())
+                            .foregroundStyle(Transaction.color(for: shortcut1Category))
+                        }
+                        .buttonStyle(.plain) // Prevents the whole widget from being tap-highlighted
+                        
+                        Button(intent: QuickLogIntent(amount: shortcut2Amount, merchant: shortcut2Merchant, category: shortcut2Category)) {
+                            HStack {
+                                Image(systemName: Transaction.icon(for: shortcut2Category))
+                                Text("+\(shortcut2Amount, format: .currency(code: "USD"))")
+                            }
+                            .font(.caption2)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Transaction.color(for: shortcut2Category).opacity(0.1), in: Capsule())
+                            .foregroundStyle(Transaction.color(for: shortcut2Category))
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
