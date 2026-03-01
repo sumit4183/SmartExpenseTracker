@@ -24,11 +24,20 @@ struct AddTransactionView: View {
                     .pickerStyle(.segmented)
                     .padding(.vertical, 8)
                     
-                    TextField("0.00", text: $viewModel.amount)
-                        .keyboardType(.decimalPad)
-                        .font(.system(size: 32, weight: .bold))
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical, 8)
+                    HStack {
+                        TextField("0.00", text: $viewModel.amount)
+                            .keyboardType(.decimalPad)
+                            .font(.system(size: 32, weight: .bold))
+                            .multilineTextAlignment(.center)
+                            .padding(.vertical, 8)
+                        
+                        Picker("Currency", selection: $viewModel.selectedCurrency) {
+                            ForEach(ExchangeRateManager.shared.supportedCurrencies, id: \.self) { currencyCode in
+                                Text(currencyCode).tag(currencyCode)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
                 } header: {
                     Text("Amount")
                 }

@@ -24,6 +24,7 @@ class AddTransactionViewModel: ObservableObject {
         }
     }
     @Published var selectedCategory: String = "Uncategorized"
+    @Published var selectedCurrency: String = "USD"
     
     // Available categories (must match our model's classes for best results)
     let categories = [
@@ -53,6 +54,7 @@ class AddTransactionViewModel: ObservableObject {
             self.type = t.typeEnum
             self.description = t.unwrappedDesc
             self.selectedCategory = t.unwrappedCategory
+            self.selectedCurrency = t.unwrappedCurrencyCode
         }
     }
     
@@ -94,10 +96,12 @@ class AddTransactionViewModel: ObservableObject {
     func saveTransaction() -> Bool {
         guard let amountDouble = Double(amount) else { return false }
         
+        let baseAmount = ExchangeRateManager.shared.convertToBase(amount: amountDouble, from: selectedCurrency)
+        
         // 1. Anomaly Check (Guardian)
         // Skip anomalies for edits to avoid annoyance
         if editingTransaction == nil && !isAnomalyConfirmed {
-            if checkForAnomaly(amount: amountDouble, category: selectedCategory) {
+            if checkForAnomaly(baseAmount: baseAmount, category: selectedCategory) {
                 return false // Stop save, trigger UI alert
             }
         }
@@ -114,6 +118,8 @@ class AddTransactionViewModel: ObservableObject {
         }
         
         transaction.amount = amountDouble
+        transaction.currencyCode = selectedCurrency
+        transaction.baseCurrencyAmount = baseAmount
         transaction.desc = description
         transaction.category = selectedCategory
         transaction.typeEnum = type
@@ -135,7 +141,7 @@ class AddTransactionViewModel: ObservableObject {
     }
     
     // MARK: - Anomaly Logic (Z-Score)
-    private func checkForAnomaly(amount: Double, category: String) -> Bool {
+    private func checkForAnomaly(baseAmount: Double, category: String) -> Bool {
         // Fetch history for this category
         let request = NSFetchRequest<Transaction>(entityName: "Transaction")
         request.predicate = NSPredicate(format: "category == %@", category)
@@ -146,7 +152,7 @@ class AddTransactionViewModel: ObservableObject {
             // Need decent sample size (e.g. at least 5 coffee runs)
             guard history.count >= 5 else { return false }
             
-            let amounts = history.map { $0.amount }
+            let amounts = history.map { $0.unwrappedBaseAmount }
             let sum = amounts.reduce(0, +)
             let mean = sum / Double(amounts.count)
             
@@ -159,11 +165,11 @@ class AddTransactionViewModel: ObservableObject {
             // Let's enforce a minimum threshold too (e.g. $10 variance) to avoid noise.
             let effectiveStdDev = max(stdDev, 5.0) 
             
-            let zScore = (amount - mean) / effectiveStdDev
+            let zScore = (baseAmount - mean) / effectiveStdDev
             
             // Threshold: > 2.0 (Top 2.5% of outliers in normal distribution)
             if zScore > 2.0 {
-                let percentDiff = Int(((amount - mean) / mean) * 100)
+                let percentDiff = Int(((baseAmount - mean) / mean) * 100)
                 self.anomalyMessage = "This is \(percentDiff)% higher than your average \(category) spend of \(mean.formatted(.currency(code: "USD")))."
                 self.showAnomalyAlert = true
                 return true
