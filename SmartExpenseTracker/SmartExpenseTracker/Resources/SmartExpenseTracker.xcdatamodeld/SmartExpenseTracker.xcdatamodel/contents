@@ -7,6 +7,8 @@
         <attribute name="desc" optional="NO" attributeType="String"/>
         <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isAnomaly" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="currencyCode" optional="YES" attributeType="String" defaultValueString="USD"/>
+        <attribute name="baseCurrencyAmount" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
     <elements>
         <element name="Transaction" positionX="0" positionY="0" width="128" height="120"/>

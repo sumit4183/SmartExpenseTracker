@@ -41,6 +41,21 @@ extension Transaction {
         date ?? Date()
     }
     
+    public var unwrappedCurrencyCode: String {
+        // Fallback to USD for legacy data or if not set
+        if self.entity.attributesByName.keys.contains("currencyCode") {
+            return self.value(forKey: "currencyCode") as? String ?? "USD"
+        }
+        return "USD"
+    }
+    
+    public var unwrappedBaseAmount: Double {
+        if self.entity.attributesByName.keys.contains("baseCurrencyAmount") {
+            return self.value(forKey: "baseCurrencyAmount") as? Double ?? amount
+        }
+        return amount // Fallback to raw amount if no base is set
+    }
+    
     @objc public var sectionIdentifier: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -50,8 +65,15 @@ extension Transaction {
     public var formattedAmount: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = "USD"
+        formatter.currencyCode = unwrappedCurrencyCode // Use the transaction's specific currency
         return formatter.string(from: NSNumber(value: amount)) ?? "$0.00"
+    }
+    
+    public var formattedBaseAmount: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = "USD" // Our hardcoded Base Currency for Analytics
+        return formatter.string(from: NSNumber(value: unwrappedBaseAmount)) ?? "$0.00"
     }
     
     // MARK: - UI Helpers
