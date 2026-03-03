@@ -66,12 +66,12 @@ class TransactionListViewModel: ObservableObject {
         case .highest:
             // Secondary sort by date to keep consistent order
             return [
-                NSSortDescriptor(keyPath: \Transaction.amount, ascending: false),
+                NSSortDescriptor(keyPath: \Transaction.baseCurrencyAmount, ascending: false),
                 NSSortDescriptor(keyPath: \Transaction.date, ascending: false)
             ]
         case .lowest:
              return [
-                NSSortDescriptor(keyPath: \Transaction.amount, ascending: true),
+                NSSortDescriptor(keyPath: \Transaction.baseCurrencyAmount, ascending: true),
                 NSSortDescriptor(keyPath: \Transaction.date, ascending: false)
             ]
         }

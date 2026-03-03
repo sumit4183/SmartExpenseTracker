@@ -42,8 +42,8 @@ struct Provider: TimelineProvider {
             // Calculate rough net balance for the widget
             let balanceRequest: NSFetchRequest<Transaction> = NSFetchRequest<Transaction>(entityName: "Transaction")
             let all = try context.fetch(balanceRequest)
-            let income = all.filter { $0.typeEnum == .income }.reduce(0) { $0 + $1.amount }
-            let expenses = all.filter { $0.typeEnum == .expense }.reduce(0) { $0 + $1.amount }
+            let income = all.filter { $0.typeEnum == .income }.reduce(0) { $0 + $1.unwrappedBaseAmount }
+            let expenses = all.filter { $0.typeEnum == .expense }.reduce(0) { $0 + $1.unwrappedBaseAmount }
             
             return (recent, income - expenses)
         } catch {
@@ -160,7 +160,7 @@ struct MediumWidgetView: View {
                                 .font(.caption)
                                 .lineLimit(1)
                             Spacer()
-                            Text(transaction.amount, format: .currency(code: "USD"))
+                            Text(transaction.formattedAmount)
                                 .font(.caption)
                                 .bold()
                         }

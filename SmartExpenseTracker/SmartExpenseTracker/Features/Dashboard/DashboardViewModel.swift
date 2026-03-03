@@ -140,8 +140,8 @@ extension DashboardViewModel {
         let incomes = transactions.filter { $0.typeEnum == .income }
         
         // 1. Total Spend & Income (All Time)
-        result.total = expenses.reduce(0) { $0 + $1.amount }
-        result.totalIncome = incomes.reduce(0) { $0 + $1.amount }
+        result.total = expenses.reduce(0) { $0 + $1.unwrappedBaseAmount }
+        result.totalIncome = incomes.reduce(0) { $0 + $1.unwrappedBaseAmount }
         result.netSavings = result.totalIncome - result.total
         
         // 1b. Current Month Spend (For Budget) - EXPENSES ONLY
@@ -149,13 +149,13 @@ extension DashboardViewModel {
         let now = Date()
         result.month = expenses
             .filter { calendar.isDate($0.unwrappedDate, equalTo: now, toGranularity: .month) }
-            .reduce(0) { $0 + $1.amount }
+            .reduce(0) { $0 + $1.unwrappedBaseAmount }
         
         // 2. Spending by Category - EXPENSES ONLY
         var catTotals: [String: Double] = [:]
         for t in expenses {
             let cat = t.unwrappedCategory
-            catTotals[cat, default: 0] += t.amount
+            catTotals[cat, default: 0] += t.unwrappedBaseAmount
         }
         result.catTotals = catTotals
         
@@ -171,10 +171,10 @@ extension DashboardViewModel {
             let date = calendar.date(byAdding: .day, value: -i, to: Date())!
             let startOfDay = calendar.startOfDay(for: date)
             
-            // Sum transactions for this specific day
+            // Sum transactions for this specific day (Base)
             let dailyTotal = transactions
                 .filter { calendar.isDate($0.unwrappedDate, inSameDayAs: date) }
-                .reduce(0) { $0 + $1.amount }
+                .reduce(0) { $0 + $1.unwrappedBaseAmount }
             
             last7Days.append(DailySpend(date: startOfDay, amount: dailyTotal))
         }
@@ -199,8 +199,8 @@ extension DashboardViewModel {
                     Calendar.current.startOfDay(for: t.unwrappedDate)
                 }
                 
-                // Get daily totals for this weekday (e.g., [15.0, 20.0, 18.0])
-                let dailyTotals = groupedByDate.map { $0.value.reduce(0) { $0 + $1.amount } }
+                // Get daily totals for this weekday in base currency (e.g., [15.0, 20.0, 18.0])
+                let dailyTotals = groupedByDate.map { $0.value.reduce(0) { $0 + $1.unwrappedBaseAmount } }
                 
                 // 1. Mean
                 let total = dailyTotals.reduce(0, +)
@@ -263,8 +263,8 @@ extension DashboardViewModel {
         
         for t in expenses {
             let key = normalize(t.unwrappedDesc)
-            // Group by Merchant + Rough Amount (Round to nearest integer to handle currency fluctuate)
-            let amountKey = "\(key)_\(Int(t.amount))"
+            // Group by Merchant + Exact Amount + Currency Code to accurately detect subscriptions
+            let amountKey = "\(key)_\(Int(t.amount))_\(t.unwrappedCurrencyCode)"
             candidates[amountKey, default: []].append(t)
         }
         

@@ -38,6 +38,8 @@ struct QuickLogIntent: AppIntent {
                 transaction.date = Date()
                 transaction.isAnomaly = false
                 transaction.category = category
+                transaction.currencyCode = "USD"
+                transaction.baseCurrencyAmount = amount
                 
                 try bgContext.save()
             }
