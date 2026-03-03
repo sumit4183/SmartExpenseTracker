@@ -10,7 +10,13 @@
         <attribute name="currencyCode" optional="YES" attributeType="String" defaultValueString="USD"/>
         <attribute name="baseCurrencyAmount" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
+    <entity name="CategoryOverride" representedClassName="CategoryOverride" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="merchantName" optional="NO" attributeType="String"/>
+        <attribute name="userPreferredCategory" optional="NO" attributeType="String"/>
+    </entity>
     <elements>
-        <element name="Transaction" positionX="0" positionY="0" width="128" height="120"/>
+        <element name="Transaction" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="CategoryOverride" positionX="180" positionY="0" width="128" height="90"/>
     </elements>
 </model>
