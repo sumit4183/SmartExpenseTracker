@@ -24,6 +24,7 @@ class AddTransactionViewModel: ObservableObject {
         }
     }
     @Published var selectedCategory: String = "Uncategorized"
+    private var predictedCategory: String? = nil
     @Published var selectedCurrency: String = "USD"
     
     // Available categories (must match our model's classes for best results)
@@ -80,6 +81,7 @@ class AddTransactionViewModel: ObservableObject {
             // Add a small animation to show "magic"
             withAnimation {
                 self.selectedCategory = prediction.label
+                self.predictedCategory = prediction.label
             }
         } catch {
             print("Prediction error: \(error)")
@@ -123,6 +125,36 @@ class AddTransactionViewModel: ObservableObject {
         transaction.desc = description
         transaction.category = selectedCategory
         transaction.typeEnum = type
+        
+        // --- 3. ON-DEVICE LEARNING (Epic 3, Phase 3.2) ---
+        // If the resulting category is different than what the AI predicted,
+        // it means the user manually corrected the AI. We save this override.
+        if type == .expense,
+           let predicted = predictedCategory,
+           predicted != selectedCategory,
+           !description.isEmpty {
+            
+            // First check if an override already exists for this exact merchant to avoid duplicates
+            let overrideRequest = NSFetchRequest<CategoryOverride>(entityName: "CategoryOverride")
+            // Strict match on merchant name
+            overrideRequest.predicate = NSPredicate(format: "merchantName == [c] %@", description)
+            
+            do {
+                let existingOverrides = try viewContext.fetch(overrideRequest)
+                if let existing = existingOverrides.first {
+                    // Update existing rule
+                    existing.userPreferredCategory = selectedCategory
+                } else {
+                    // Create new learned rule
+                    let newOverride = CategoryOverride(context: viewContext)
+                    newOverride.id = UUID()
+                    newOverride.merchantName = description
+                    newOverride.userPreferredCategory = selectedCategory
+                }
+            } catch {
+                print("Failed to query existing overrides: \(error)")
+            }
+        }
         
         do {
             try viewContext.save()
