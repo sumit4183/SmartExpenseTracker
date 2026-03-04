@@ -74,11 +74,27 @@ class AddTransactionViewModel: ObservableObject {
         guard description.count > 2 else { return }
         
         do {
-            // The model expects a "text" input
+            // STEP 1: Check Local Overrides (Continuous Learning)
+            let overrideRequest = NSFetchRequest<CategoryOverride>(entityName: "CategoryOverride")
+            // Strict match on merchant name
+            overrideRequest.predicate = NSPredicate(format: "merchantName == [c] %@", description)
+            overrideRequest.fetchLimit = 1
+            
+            if let overrides = try? viewContext.fetch(overrideRequest), let firstOverride = overrides.first {
+                // We learned from the user previously! Use their preferred category.
+                if let learnedCategory = firstOverride.userPreferredCategory {
+                    withAnimation {
+                        self.selectedCategory = learnedCategory
+                        self.predictedCategory = learnedCategory
+                    }
+                    return // Skip CoreML entirely
+                }
+            }
+            
+            // STEP 2: Fallback to CoreML Model
             let prediction = try model.prediction(text: description)
             
             // UI Update must be on Main Thread
-            // Add a small animation to show "magic"
             withAnimation {
                 self.selectedCategory = prediction.label
                 self.predictedCategory = prediction.label
