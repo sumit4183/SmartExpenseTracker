@@ -84,6 +84,16 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
                 }
                 
+                Section(header: Text("Smart AI Defaults")) {
+                    NavigationLink(destination: LearnedCategoriesView()) {
+                        HStack {
+                            Image(systemName: "brain.head.profile")
+                                .foregroundColor(.purple)
+                            Text("Manage Learned Categories")
+                        }
+                    }
+                }
+                
                 Section(header: Text("Danger Zone")) {
                     Button(role: .destructive) {
                         showResetAlert = true
