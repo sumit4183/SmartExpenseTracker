@@ -40,6 +40,8 @@ Numbers tell only half the story. The Insight Layer translates data into natural
 *   **Machine Learning**:
     *   **Training**: Python (`scripts/generate_data.py`) & Create ML.
     *   **Inference**: Core ML Framework (Custom Text Classifier & Regressor).
+    *   **Continuous Learning**: On-Device Core Data Override Dictionary.
+*   **Ecosystem Integration**: WidgetKit (iOS 17 Interactive), App Intents (Siri / Shortcuts).
 
 ---
 
@@ -50,6 +52,16 @@ Numbers tell only half the story. The Insight Layer translates data into natural
 *   **Safety Net**: Anomaly detection for unusual spending.
 *   **Full Control**: Swipe-to-Edit and Swipe-to-Delete transactions.
 *   **Privacy**: 100% On-Device. No account required.
+
+---
+
+## 🚀 Advanced iOS Features (V1.1)
+
+*   **Siri & Shortcuts Integration**: Complete App Intents integration. "Hey Siri, log an expense in Smart Expense Tracker".
+*   **Interactive Widgets**: iOS 17 interactive Home Screen & Lock Screen widgets. Tap a custom shortcut to log an expense instantly from the Home Screen.
+*   **Multi-Currency Support**: Log expenses abroad. The app automatically fetches live exchange rates, caches them locally, and normalizes all dashboard analytics to your base currency natively.
+*   **On-Device Continuous Learning**: The Core ML model isn't static. It learns from your manual categorization overriding and instantly adapts, ensuring the AI is personalized safely to your behavioral patterns.
+*   **Shared App Group Container**: A centralized SQLite database allowing cross-process writing from background extensions without launching the main application layer.
 
 ---
 
