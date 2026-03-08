@@ -51,7 +51,9 @@ extension Transaction {
     
     public var unwrappedBaseAmount: Double {
         if self.entity.attributesByName.keys.contains("baseCurrencyAmount") {
-            return self.value(forKey: "baseCurrencyAmount") as? Double ?? amount
+            let base = self.value(forKey: "baseCurrencyAmount") as? Double ?? 0.0
+            // Legacy migration: if base is 0 but amount is > 0, assume base == amount
+            return (base == 0.0 && amount != 0.0) ? amount : base
         }
         return amount // Fallback to raw amount if no base is set
     }

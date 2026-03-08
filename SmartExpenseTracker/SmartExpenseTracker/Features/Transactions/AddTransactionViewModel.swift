@@ -26,6 +26,7 @@ class AddTransactionViewModel: ObservableObject {
     @Published var selectedCategory: String = "Uncategorized"
     private var predictedCategory: String? = nil
     @Published var selectedCurrency: String = "USD"
+    @Published var date: Date = Date()
     
     // Available categories (must match our model's classes for best results)
     let categories = [
@@ -56,6 +57,7 @@ class AddTransactionViewModel: ObservableObject {
             self.description = t.unwrappedDesc
             self.selectedCategory = t.unwrappedCategory
             self.selectedCurrency = t.unwrappedCurrencyCode
+            self.date = t.unwrappedDate
         }
     }
     
@@ -131,7 +133,7 @@ class AddTransactionViewModel: ObservableObject {
         } else {
             transaction = Transaction(context: viewContext)
             transaction.id = UUID()
-            transaction.date = Date()
+            transaction.date = date
             transaction.isAnomaly = isAnomalyConfirmed
         }
         
@@ -217,7 +219,12 @@ class AddTransactionViewModel: ObservableObject {
             
             // Threshold: > 2.0 (Top 2.5% of outliers in normal distribution)
             if zScore > 2.0 {
-                let percentDiff = Int(((baseAmount - mean) / mean) * 100)
+                let percentDiff: Int
+                if mean > 0 {
+                    percentDiff = Int(((baseAmount - mean) / mean) * 100)
+                } else {
+                    percentDiff = 100 // Safe fallback
+                }
                 self.anomalyMessage = "This is \(percentDiff)% higher than your average \(category) spend of \(mean.formatted(.currency(code: "USD")))."
                 self.showAnomalyAlert = true
                 return true

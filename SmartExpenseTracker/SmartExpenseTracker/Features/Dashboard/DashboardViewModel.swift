@@ -139,17 +139,19 @@ extension DashboardViewModel {
         let expenses = transactions.filter { $0.typeEnum == .expense }
         let incomes = transactions.filter { $0.typeEnum == .income }
         
-        // 1. Total Spend & Income (All Time)
-        result.total = expenses.reduce(0) { $0 + $1.unwrappedBaseAmount }
-        result.totalIncome = incomes.reduce(0) { $0 + $1.unwrappedBaseAmount }
+        let calendar = Calendar.current
+        let now = Date()
+        
+        let currentMonthExpenses = expenses.filter { calendar.isDate($0.unwrappedDate, equalTo: now, toGranularity: .month) }
+        let currentMonthIncomes = incomes.filter { calendar.isDate($0.unwrappedDate, equalTo: now, toGranularity: .month) }
+        
+        // 1. Total Spend & Income (Current Month)
+        result.total = currentMonthExpenses.reduce(0) { $0 + $1.unwrappedBaseAmount }
+        result.totalIncome = currentMonthIncomes.reduce(0) { $0 + $1.unwrappedBaseAmount }
         result.netSavings = result.totalIncome - result.total
         
         // 1b. Current Month Spend (For Budget) - EXPENSES ONLY
-        let calendar = Calendar.current
-        let now = Date()
-        result.month = expenses
-            .filter { calendar.isDate($0.unwrappedDate, equalTo: now, toGranularity: .month) }
-            .reduce(0) { $0 + $1.unwrappedBaseAmount }
+        result.month = result.total
         
         // 2. Spending by Category - EXPENSES ONLY
         var catTotals: [String: Double] = [:]

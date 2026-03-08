@@ -19,7 +19,7 @@ struct DashboardView: View {
                     
                     // MARK: - Header Card (Spend & Trend)
                     VStack(spacing: 8) {
-                        Text("Net Balance")
+                        Text("Monthly Net Balance")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                         Text(viewModel.netSavings, format: .currency(code: "USD"))

@@ -52,6 +52,8 @@ struct AddTransactionView: View {
                         }
                     }
                     .pickerStyle(.menu)
+                    
+                    DatePicker("Date", selection: $viewModel.date, displayedComponents: [.date, .hourAndMinute])
                 } header: {
                     Text("Details")
                 } footer: {
