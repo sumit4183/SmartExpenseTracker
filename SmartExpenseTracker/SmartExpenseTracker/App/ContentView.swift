@@ -21,7 +21,7 @@ struct ContentView: View {
                         Label("Dashboard", systemImage: "house.fill")
                     }
                 
-                AnalyticsView(viewModel: dashboardViewModel)
+                AnalyticsView(context: persistenceController.container.viewContext)
                     .tabItem {
                         Label("Analytics", systemImage: "chart.pie.fill")
                     }

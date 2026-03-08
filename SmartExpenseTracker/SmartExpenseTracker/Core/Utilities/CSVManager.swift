@@ -1,35 +1,58 @@
 import Foundation
 import CoreData
 
-struct CSVManager {
+class CSVManager {
     static func generateCSV(context: NSManagedObjectContext) -> String {
+        // Fetch all transactions, sorted by date (newest first)
         let request = NSFetchRequest<Transaction>(entityName: "Transaction")
         request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)]
         
-        var csvString = "Date,Description,Category,Type,Amount\n"
-        
         do {
             let transactions = try context.fetch(request)
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateStyle = .medium
-            dateFormatter.timeStyle = .none
             
+            // CSV Header
+            var csvString = "Date,Type,Category,Merchant,Amount,Currency,Base Amount (USD),Notes\n"
+            
+            // Date Formatter
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+            
+            // Loop and append rows
             for t in transactions {
-                let date = dateFormatter.string(from: t.unwrappedDate)
-                // Escape quotes in description
-                let desc = (t.unwrappedDesc).replacingOccurrences(of: "\"", with: "\"\"")
-                let category = t.unwrappedCategory
-                let type = t.typeEnum.rawValue.capitalized
-                let amount = String(format: "%.2f", t.amount)
+                let dateStr = dateFormatter.string(from: t.unwrappedDate)
+                let typeStr = t.typeEnum.rawValue.capitalized
+                let categoryStr = t.unwrappedCategory
                 
-                let line = "\"\(date)\",\"\(desc)\",\"\(category)\",\"\(type)\",\(amount)\n"
-                csvString.append(line)
+                // Escape commas in Merchant and Notes fields
+                let merchantStr = escapeStringForCSV(t.unwrappedDesc)
+                
+                // Formatted amounts
+                let amountStr = String(format: "%.2f", t.amount)
+                let currencyStr = t.unwrappedCurrencyCode
+                let baseAmountStr = String(format: "%.2f", t.unwrappedBaseAmount)
+                
+                // Fallback for anomalies
+                let notesStr = t.isAnomaly ? "Flagged as Anomaly" : ""
+                
+                let row = "\(dateStr),\(typeStr),\(categoryStr),\(merchantStr),\(amountStr),\(currencyStr),\(baseAmountStr),\(notesStr)\n"
+                csvString.append(row)
             }
+            
+            return csvString
+            
         } catch {
-            print("Error generating CSV: \(error)")
-            return "Error generating CSV"
+            print("Failed to fetch transactions for CSV: \(error)")
+            return "Error initializing CSV Export"
         }
-        
-        return csvString
+    }
+    
+    // Safely escapes text that might contain commas
+    private static func escapeStringForCSV(_ text: String) -> String {
+        var escaped = text
+        if escaped.contains(",") || escaped.contains("\"") || escaped.contains("\n") {
+            escaped = escaped.replacingOccurrences(of: "\"", with: "\"\"")
+            escaped = "\"\(escaped)\""
+        }
+        return escaped
     }
 }
